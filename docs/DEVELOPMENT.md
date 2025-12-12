@@ -32,3 +32,4 @@
 2. 要时刻分清楚自己在用哪个终端，是 SSH 的 Bash 还是本地的 PowerShell。
 3. SSH 登录后进入的是家目录，要切换到 `final_os` 下再做编译和 Git 相关操作。
 4. 因 SFTP 挂载的缘故，VS Code 的 Git 图形化操作界面可能失效或是更新缓慢，推荐使用命令行。
+5. `settings.json` 配置了 VS Code 默认不显示 `*.bin`、`*.o` 等编译中间产物，可在文件资源管理器查看。
