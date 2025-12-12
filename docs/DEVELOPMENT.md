@@ -18,7 +18,7 @@
 
 ## 开发工作流
 
-1. 启动 SSHFS-Win Manager，SFTP 挂载远程目录。
+1. 启动 SSHFS-Win Manager，SFTP 挂载远程目录。服务器地址为校园网环境的 `10.201.98.97:6022`。
 2. VS Code 打开项目，运行 `connect_to_server.ps1`，SSH 登录服务器。
 3. 在远程终端拉 `main` 分支到服务器，拉新分支开始开发。
 4. 写完代码后在远程终端 `make image` 编译并写镜像。
@@ -29,5 +29,6 @@
 ## 注意事项
 
 1. Git 相关操作在本地和服务器上做都可以，但推荐在服务器上做，不然本机可能会把 LF 转成 CRLF。
-2. 要时刻分清楚自己在用哪个终端，是 SSH 还是 PowerShell。
+2. 要时刻分清楚自己在用哪个终端，是 SSH 的 Bash 还是本地的 PowerShell。
 3. SSH 登录后进入的是家目录，要切换到 `final_os` 下再做编译和 Git 相关操作。
+4. 因 SFTP 挂载的缘故，VS Code 的 Git 图形化操作界面可能失效或是更新缓慢，推荐使用命令行。
