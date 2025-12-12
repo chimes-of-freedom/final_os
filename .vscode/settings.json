@@ -1,0 +1,18 @@
+{
+	"editor.insertSpaces": false,
+	"editor.tabSize": 8,
+	"editor.detectIndentation": false,
+	"editor.renderWhitespace": "all",
+	"[c]": {
+		"editor.tabSize": 8,
+		"editor.insertSpaces": false
+	},
+	"[cpp]": {
+		"editor.tabSize": 8,
+		"editor.insertSpaces": false
+	},
+	"files.exclude": {
+		"**/*.o": true,
+		"**/*.bin": true
+	}
+}

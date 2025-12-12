@@ -1,0 +1,13 @@
+a.img
+80m.img
+
+bochsout.txt
+krnl.map
+kernel.bin.asm
+
+boot/boot.bin
+boot/loader.bin
+kernel.bin
+
+kernel/*.o
+lib/*.o
