@@ -1,6 +1,6 @@
 if (!(Test-Path -Path "80m.img")) {
-	Write-Host "未找到 80m.img。"
-	Write-Host "请先将 80m.img.gz 解压为 80m.img 后再运行。"
+	Write-Host "80m.img does not exist."
+	Write-Host "Extract 80m.img.gz here using `gunzip -k 80m.img.gz` before starting emulation."
 	exit 1
 }
 
