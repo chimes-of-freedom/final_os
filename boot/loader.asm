@@ -424,13 +424,15 @@ LABEL_PM_START:
 	call	InitKernel
 
 	;jmp	$
-	mov	dword [BOOT_PARAM_ADDR], BOOT_PARAM_MAGIC	; BootParam[0] = BootParamMagic;
-	mov	eax, [dwMemSize]				;
-	mov	[BOOT_PARAM_ADDR + 4], eax			; BootParam[1] = MemSize;
+
+	;; fill in BootParam[]
+	mov	dword [BOOT_PARAM_ADDR], BOOT_PARAM_MAGIC ; Magic Number
+	mov	eax, [dwMemSize]
+	mov	[BOOT_PARAM_ADDR + 4], eax ; memory size
 	mov	eax, KERNEL_FILE_SEG
 	shl	eax, 4
 	add	eax, KERNEL_FILE_OFF
-	mov	[BOOT_PARAM_ADDR + 8], eax			; BootParam[2] = KernelFilePhyAddr;
+	mov	[BOOT_PARAM_ADDR + 8], eax ; phy-addr of kernel.bin
 
 	;***************************************************************
 	jmp	SelectorFlatC:KRNL_ENT_PT_PHY_ADDR	; 正式进入内核 *
@@ -440,7 +442,17 @@ LABEL_PM_START:
 	;              ┃                 .                  ┃
 	;              ┃                 .                  ┃
 	;              ┃                 .                  ┃
+	;      501000h ┃                                    ┃
 	;              ┣━━━━━━━━━━━━━━━━━━┫
+	;      500FFFh ┃■■■■■■■■■■■■■■■■■■┃  4GB ram needs 4MB  for page tables: [101000h, 501000h)
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┃■■■■■■■■■■■■■■■■■■┃
+	;              ┣■■■■■■■■■■■■■■■■■■┫
+	;      108FFFh ┃■■■■■■■■■■■■■■■■■■┃ 32MB ram needs 32KB for page tables: [101000h, 109000h)
 	;              ┃■■■■■■■■■■■■■■■■■■┃
 	;              ┃■■■■■■Page  Tables■■■■■■┃
 	;              ┃■■■■■(大小由LOADER决定)■■■■┃
@@ -483,6 +495,7 @@ LABEL_PM_START:
 	;              ┃■■■■■■■■■■■■■■■■■■┃
 	;        1000h ┃■■■■■■■■KERNEL■■■■■■■┃ 1000h ← KERNEL 入口 (KRNL_ENT_PT_PHY_ADDR)
 	;              ┣━━━━━━━━━━━━━━━━━━┫
+	;         900h ┃Boot Params                         ┃
 	;              ┃                                    ┃
 	;         500h ┃              F  R  E  E            ┃
 	;              ┣━━━━━━━━━━━━━━━━━━┫

@@ -30,7 +30,7 @@ PRIVATE void	hd_ioctl		(MESSAGE * p);
 PRIVATE void	hd_cmd_out		(struct hd_cmd* cmd);
 PRIVATE void	get_part_table		(int drive, int sect_nr, struct part_ent * entry);
 PRIVATE void	partition		(int device, int style);
-PRIVATE void	print_hdinfo		(struct hd_info * hdi);
+/* PRIVATE void	print_hdinfo		(struct hd_info * hdi); */
 PRIVATE int	waitfor			(int mask, int val, int timeout);
 PRIVATE void	interrupt_wait		();
 PRIVATE	void	hd_identify		(int drive);
@@ -103,7 +103,7 @@ PRIVATE void init_hd()
 
 	/* Get the number of drives from the BIOS data area */
 	u8 * pNrDrives = (u8*)(0x475);
-	printl("NrDrives:%d.\n", *pNrDrives);
+	printl("{HD} NrDrives:%d.\n", *pNrDrives);
 	assert(*pNrDrives);
 
 	put_irq_handler(AT_WINI_IRQ, hd_handler);
@@ -134,7 +134,7 @@ PRIVATE void hd_open(int device)
 
 	if (hd_info[drive].open_cnt++ == 0) {
 		partition(drive * (NR_PART_PER_DRIVE + 1), P_PRIMARY);
-		print_hdinfo(&hd_info[drive]);
+		/* print_hdinfo(&hd_info[drive]); */
 	}
 }
 
@@ -338,38 +338,38 @@ PRIVATE void partition(int device, int style)
 	}
 }
 
-/*****************************************************************************
- *                                print_hdinfo
- *****************************************************************************/
-/**
- * <Ring 1> Print disk info.
- * 
- * @param hdi  Ptr to struct hd_info.
- *****************************************************************************/
-PRIVATE void print_hdinfo(struct hd_info * hdi)
-{
-	int i;
-	for (i = 0; i < NR_PART_PER_DRIVE + 1; i++) {
-		printl("%sPART_%d: base %d(0x%x), size %d(0x%x) (in sector)\n",
-		       i == 0 ? " " : "     ",
-		       i,
-		       hdi->primary[i].base,
-		       hdi->primary[i].base,
-		       hdi->primary[i].size,
-		       hdi->primary[i].size);
-	}
-	for (i = 0; i < NR_SUB_PER_DRIVE; i++) {
-		if (hdi->logical[i].size == 0)
-			continue;
-		printl("         "
-		       "%d: base %d(0x%x), size %d(0x%x) (in sector)\n",
-		       i,
-		       hdi->logical[i].base,
-		       hdi->logical[i].base,
-		       hdi->logical[i].size,
-		       hdi->logical[i].size);
-	}
-}
+/* /\***************************************************************************** */
+/*  *                                print_hdinfo */
+/*  *****************************************************************************\/ */
+/* /\** */
+/*  * <Ring 1> Print disk info. */
+/*  *  */
+/*  * @param hdi  Ptr to struct hd_info. */
+/*  *****************************************************************************\/ */
+/* PRIVATE void print_hdinfo(struct hd_info * hdi) */
+/* { */
+/* 	int i; */
+/* 	for (i = 0; i < NR_PART_PER_DRIVE + 1; i++) { */
+/* 		printl("{HD} %sPART_%d: base %d(0x%x), size %d(0x%x) (in sector)\n", */
+/* 		       i == 0 ? " " : "     ", */
+/* 		       i, */
+/* 		       hdi->primary[i].base, */
+/* 		       hdi->primary[i].base, */
+/* 		       hdi->primary[i].size, */
+/* 		       hdi->primary[i].size); */
+/* 	} */
+/* 	for (i = 0; i < NR_SUB_PER_DRIVE; i++) { */
+/* 		if (hdi->logical[i].size == 0) */
+/* 			continue; */
+/* 		printl("{HD}          " */
+/* 		       "%d: base %d(0x%x), size %d(0x%x) (in sector)\n", */
+/* 		       i, */
+/* 		       hdi->logical[i].base, */
+/* 		       hdi->logical[i].base, */
+/* 		       hdi->logical[i].size, */
+/* 		       hdi->logical[i].size); */
+/* 	} */
+/* } */
 
 /*****************************************************************************
  *                                hd_identify
@@ -424,19 +424,19 @@ PRIVATE void print_identify_info(u16* hdinfo)
 			s[i*2] = *p++;
 		}
 		s[i*2] = 0;
-		printl("%s: %s\n", iinfo[k].desc, s);
+		printl("{HD} %s: %s\n", iinfo[k].desc, s);
 	}
 
 	int capabilities = hdinfo[49];
-	printl("LBA supported: %s\n",
+	printl("{HD} LBA supported: %s\n",
 	       (capabilities & 0x0200) ? "Yes" : "No");
 
 	int cmd_set_supported = hdinfo[83];
-	printl("LBA48 supported: %s\n",
+	printl("{HD} LBA48 supported: %s\n",
 	       (cmd_set_supported & 0x0400) ? "Yes" : "No");
 
 	int sectors = ((int)hdinfo[61] << 16) + hdinfo[60];
-	printl("HD size: %dMB\n", sectors * 512 / 1000000);
+	printl("{HD} HD size: %dMB\n", sectors * 512 / 1000000);
 }
 
 /*****************************************************************************

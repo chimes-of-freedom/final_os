@@ -75,23 +75,41 @@ PUBLIC int do_open()
 	int inode_nr = search_file(pathname);
 
 	struct inode * pin = 0;
-	if (flags & O_CREAT) {
-		if (inode_nr) {
-			printl("file exists.\n");
-			return -1;
-		}
-		else {
+
+	if (inode_nr == INVALID_INODE) { /* file not exists */
+		if (flags & O_CREAT) {
 			pin = create_file(pathname, flags);
 		}
+		else {
+			printl("{FS} file not exists: %s\n", pathname);
+			return -1;
+		}
 	}
-	else {
-		assert(flags & O_RDWR);
+	else if (flags & O_RDWR) { /* file exists */
+		if ((flags & O_CREAT) && (!(flags & O_TRUNC))) {
+			assert(flags == (O_RDWR | O_CREAT));
+			printl("{FS} file exists: %s\n", pathname);
+			return -1;
+		}
+		assert((flags ==  O_RDWR                     ) ||
+		       (flags == (O_RDWR | O_TRUNC          )) ||
+		       (flags == (O_RDWR | O_TRUNC | O_CREAT)));
 
 		char filename[MAX_PATH];
 		struct inode * dir_inode;
 		if (strip_path(filename, pathname, &dir_inode) != 0)
 			return -1;
 		pin = get_inode(dir_inode->i_dev, inode_nr);
+	}
+	else { /* file exists, no O_RDWR flag */
+		printl("{FS} file exists: %s\n", pathname);
+		return -1;
+	}
+
+	if (flags & O_TRUNC) {
+		assert(pin);
+		pin->i_size = 0;
+		sync_inode(pin);
 	}
 
 	if (pin) {
@@ -102,7 +120,7 @@ PUBLIC int do_open()
 		f_desc_table[i].fd_inode = pin;
 
 		f_desc_table[i].fd_mode = flags;
-		/* f_desc_table[i].fd_cnt = 1; */
+		f_desc_table[i].fd_cnt = 1;
 		f_desc_table[i].fd_pos = 0;
 
 		int imode = pin->i_mode & I_TYPE_MASK;
@@ -145,8 +163,6 @@ PUBLIC int do_open()
  * 
  * @see open()
  * @see do_open()
- *
- * @todo return values of routines called, return values of self.
  *****************************************************************************/
 PRIVATE struct inode * create_file(char * path, int flags)
 {
@@ -178,7 +194,8 @@ PUBLIC int do_close()
 {
 	int fd = fs_msg.FD;
 	put_inode(pcaller->filp[fd]->fd_inode);
-	pcaller->filp[fd]->fd_inode = 0;
+	if (--pcaller->filp[fd]->fd_cnt == 0)
+		pcaller->filp[fd]->fd_inode = 0;
 	pcaller->filp[fd] = 0;
 
 	return 0;
