@@ -15,3 +15,5 @@ lib/*.o
 
 .vscode/sftp.json
 dev/dev_config.json
+
+.BROWSE.VC.DB*

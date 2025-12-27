@@ -7,11 +7,15 @@
 				"${workspaceFolder}/include/sys"
 			],
 			"defines": [],
-			"compilerPath": "gcc",
+			// 设为空，禁止自动扫描宿主机的标准库路径
+			"compilerPath": "",
 			"cStandard": "c99",
+			// 显式指定模式，因为没有 compilerPath 供它推断了
+			// 确保 IntelliSense 按照 32位 GCC 的规则解析类型
 			"intelliSenseMode": "linux-gcc-x86",
 			"browse": {
-				"limitSymbolsToIncludedHeaders": true
+				"limitSymbolsToIncludedHeaders": true,
+				"databaseFilename": "${workspaceFolder}/.vscode/.browse.VC.db"
 			}
 		}
 	],
