@@ -17,7 +17,7 @@
         "utils",
         "bochsrc.win",
         "*.img",
-        "*.tar.xz",
+        "*.zip",
         "bochsout.txt",
         "krnl.map",
         "kernel.bin.asm",
