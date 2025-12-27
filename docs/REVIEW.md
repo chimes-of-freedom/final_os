@@ -8,7 +8,7 @@
 
 - `kernel/hd.c`：`hd_rdwr()` 中 175 行、 179-181 行等多处假设主设备号永远为 `0`，但又在 178 行等多处同时考虑主设备号为 `0` 和 `1` 的情况。`hd_ioctl()` 有类似问题。
 - `kernel/hd.c`：`hd_rdwr()` 中 197 行假设 `p->CNT` 即 `bytes_left` 不一定为扇区整数倍，但又在 196 行和 210 行推翻了这一假设。若情况为前者，则 `while` 条件可能一直为真。
-- `include/const.h`：`ROOT_DEV` 指的是 `hd2a` 的主+次设备号，而 `MESSAGE.DEVICE` 指的是次设备号。设备号相关命名都有类似问题。建议用更清晰的命名。
+- `include/const.h`：`ROOT_DEV` 指的是 `hd2a` 的主+次设备号，而 `MESSAGE::DEVICE` 指的是次设备号。设备号相关命名都有类似问题。建议用更清晰的命名。
 
 ## `chapter9/d`
 
@@ -30,7 +30,18 @@
 >
 > 与此类似，根目录区的开始扇区即为第 `sb.n_1st_sect` 扇区，占用 sector-map 中的第 1 位（从 0 开始数）。于是，第 M 扇区（以本分区的开始扇区为 0 扇区）对应 sector-map 中的第 `(M-super_block.n_1st_sect+1)` 位。同时 sector-map 中的第 M 位对应第 `(M-1+super_block.n_1st_sect)` 扇区。
 
+## `chapter9/i`
+
+- `kernel/tty.c`：`task_tty()` 存在一个严苛的 bug：
+  - `tty_dev_write()` 在写字符到 console 的同时写字符到 caller 缓冲区并适时发消息给 caller 的原因是，`tty_dev_write()` 假设自己被调用的前提是 `task_tty()` 拿到了消息，取消阻塞后进行了新一轮循环。
+  - 然而还有一种情况：
+    - 当 `task_tty()` 刚开始执行、进行首轮循环时，`tty_dev_write()` 先于 `send_recv()` 被调用。
+    - `tty_dev_write()` 中，如果 `tty->ibuf_cnt` 大于 0，即 `tty_dev_read()` 从 console（亦即键盘输入）成功取到了输入字符，并且未初始化的 `tty->tty_left_cnt` 恰好也大于 0，则 `tty_dev_write()` 可能会向不存在的 `tty->tty_caller` 发消息，以及向其缓冲区 `tty->tty_req_buf` 写入数据。
+    - 上述变量除 `tty->ibuf_cnt` 外均未显式初始化；尽管 `tty_table` 作为全局变量会存在于 `.bss` 段，而 C 语言/ABI 规定全局和静态未显式初始化变量在程序开始时为 0，但 Orange OS 并未遵守约定对 `.bss` 段显式清零，故这些变量可能都是非零垃圾值，尤其是 `tty->tty_left_cnt` 非零会导致后续对垃圾值的读写。
+  - 这样就造成了错误的写入和错误的消息发送，进而导致系统崩溃。
+  - 然而正常使用状态下 `task_tty()` 第一次调用 `tty_dev_read()` 前基本不可能有键盘输入，因此该 bug 难以被动触发。
+
 ## `chapter11/c`
 
 - 已知 bug：TTY0 输入任意一个字符系统即死锁。
-- 已知 bug：TTY1/TTY2 输入 `pwd` 命令即 `assert(p_who_wanna_receive-》p_flags == RECEIVING) failed`。
+- 已知 bug：TTY1/TTY2 输入 `pwd` 命令即 `assert(p_who_wanna_receive->p_flags == RECEIVING) failed`。
