@@ -1,0 +1,34 @@
+{
+    "name": "DevServer",
+    "host": "server_ip",
+    "protocol": "sftp",
+    "port": 6022,
+    "username": "user",
+    "password": "password",
+    "remotePath": "/home/user/projects/final_os",
+    "uploadOnSave": true,
+    "downloadOnOpen": false,
+    "ignore": [
+        ".vscode",
+        ".git",
+        ".DS_Store",
+        "dev.ps1",
+        "dev_config.json",
+        "utils",
+        "bochsrc.win",
+        "*.img",
+        "*.tar.xz",
+        "bochsout.txt",
+        "krnl.map",
+        "kernel.bin.asm",
+        "boot/*.bin",
+        "kernel.bin",
+        "kernel/*.o",
+        "lib/*.o"
+    ],
+    "watcher": {
+        "files": "**/*",
+        "autoUpload": true,
+        "autoDelete": true
+    }
+}

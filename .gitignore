@@ -1,5 +1,6 @@
 a.img
 100m.img
+100m.img.tar.xz
 
 bochsout.txt
 krnl.map
@@ -11,3 +12,6 @@ kernel.bin
 
 kernel/*.o
 lib/*.o
+
+.vscode/sftp.json
+dev/dev_config.json

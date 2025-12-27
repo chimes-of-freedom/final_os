@@ -69,7 +69,7 @@ disasm :
 	$(DASM) $(DASMFLAGS) $(ORANGESKERNEL) > $(DASMOUTPUT)
 
 buildimg :
-    dd if=/dev/zero of=$(FD) bs=512 count=2880
+	dd if=/dev/zero of=$(FD) bs=512 count=2880
 	dd if=boot/boot.bin of=$(FD) bs=512 count=1 conv=notrunc
 	dd if=boot/hdboot.bin of=$(HD) bs=1 count=446 conv=notrunc
 	dd if=boot/hdboot.bin of=$(HD) seek=510 skip=510 bs=1 count=2 conv=notrunc
