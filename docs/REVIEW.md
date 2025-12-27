@@ -30,6 +30,7 @@
 >
 > 与此类似，根目录区的开始扇区即为第 `sb.n_1st_sect` 扇区，占用 sector-map 中的第 1 位（从 0 开始数）。于是，第 M 扇区（以本分区的开始扇区为 0 扇区）对应 sector-map 中的第 `(M-super_block.n_1st_sect+1)` 位。同时 sector-map 中的第 M 位对应第 `(M-1+super_block.n_1st_sect)` 扇区。
 
-## `chapter9/f`
+## `chapter11/c`
 
-- 
+- 已知 bug：TTY0 输入任意一个字符系统即死锁。
+- 已知 bug：TTY1/TTY2 输入 `pwd` 命令即 `assert(p_who_wanna_receive-》p_flags == RECEIVING) failed`。
