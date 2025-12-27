@@ -3,6 +3,10 @@
 	"editor.tabSize": 8,
 	"editor.detectIndentation": false,
 	"editor.renderWhitespace": "all",
+	"files.eol": "\n",
+	"files.associations": {
+		"dev": "shellscript"
+	},
 	"[c]": {
 		"editor.tabSize": 8,
 		"editor.insertSpaces": false

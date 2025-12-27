@@ -2,7 +2,7 @@
 
 # OS Project Development Helper Script
 
-# Check if we are in the correct directory (optional safety check)
+# Check if we are in the correct directory
 if [ ! -f "Makefile" ]; then
     echo "Error: Makefile not found. Please run this command in the project root."
     exit 1
@@ -23,18 +23,17 @@ if [ "$1" == "image" ]; then
     # Check if make succeeded
     if [ $? -eq 0 ]; then
         echo ">>> [dev] 3. Compressing artifact..."
-        # Remove old artifact to ensure freshness
-        rm -f 100m.img.tar.xz
-        # Compress the modified image using xz
-        tar cJf 100m.img.tar.xz 100m.img
         
-        echo ">>> [dev] Build Success! Artifact ready: 100m.img.tar.xz"
+        rm -f 100m.img.zip
+        zip 100m.img.zip 100m.img
+        
+        echo ">>> [dev] Build Success! Artifact ready: 100m.img.zip"
     else
         echo ">>> [dev] Build Failed."
         exit 1
     fi
 else
-    # Pass all other arguments directly to make (e.g., 'dev clean' -> 'make clean')
+    # Pass all other arguments directly to make
     echo ">>> [dev] Executing: make $@"
     make "$@"
 fi

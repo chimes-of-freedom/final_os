@@ -22,18 +22,18 @@
 
 1. 【首次】克隆项目到 Windows 并用 VS Code 打开。
 2. 【首次】VS Code 安装 SFTP 插件后 Windows 上运行脚本 `dev.ps1 init` 并根据引导进行初始化配置，以生成对应的用户凭证文件和 `sftp.json`。
-3. **`Ctrl+Shift+P` 输入 `Upload`，找到 `SFTP: Upload Project`，执行以将项目同步到服务器。**
+3. **`Ctrl+Shift+P` 输入 `Upload`，找到 `SFTP: Upload Project`，执行以将项目同步到服务器。**如果找不到选项，请重启 VS Code。
 4. 在 Windows 上进行开发。代码相关的改动将会同步到服务器 `~/projects/final_os` 下。SFTP 插件只监视变化。
-5. Windows 上执行 `dev.ps1 connect` 以 SSH 连接到服务器，切换到 `projects/final_os` 下后使用 `dev image` 进行编译和推送：
+5. Windows 上执行 `dev.ps1 connect` 以 SSH 连接到服务器，切换到 `projects/final_os` 下后使用 `dev image` 进行编译：
    1. `dev` 执行 `tar xzf 100m.img.tar.gz` 解压硬盘镜像为 `100.img`；
    2. `dev` 执行 `make image` 编译项目并写入软盘/硬盘镜像；
-   3. `dev` 执行 `tar cJf 100m.img.tar.xz 100m.img` 压缩 `100m.img`；
-   4. `dev` 通过 `scp` 命令将软盘镜像和硬盘镜像压缩推送到 Windows。
-6. 此时 Windows 上应有新的 `a.img` 并且多出 `100m.img.tar.xz`。**注意不是 `100m.img.tar.gz`。**
-7. Windows 上执行 `dev.ps1 test` 进行解压和测试：
-   1. `dev.ps1` 解压 `100m.img.tar.xz` 为 `100.img`；
-   2. `dev.ps1` 执行 `bochs -f bochsrc.win -debugger` 启动 Bochs 调试。
-8. Windows 上测试完成后进行 Commit，具体步骤为：
+   3. `dev` 执行 `zip 100m.img.zip 100m.img` 压缩 `100m.img`。
+   4. 如果是其他的选项，例如 `dev clean`，则只会执行 `make clean`。
+6. Windows 上执行 `dev.ps1 test` 进行镜像拉取、解压和测试：
+   1. `dev.ps1` 通过 `scp` 将服务器上的 `a.img` 和 `100m.img.zip` 拉取到本地；
+   2. `dev.ps1` 解压 `100m.img.zip` 为 `100.img`；
+   3. `dev.ps1` 执行 `bochs -q -f bochsrc.win -debugger` 启动 Bochs 调试。
+7. Windows 上测试完成后进行 Commit，具体步骤为：
    1. `git checkout -b tag/content`
    2. `git add .`；
    3. `git commit -m 'tag: 做了 xxx'`；

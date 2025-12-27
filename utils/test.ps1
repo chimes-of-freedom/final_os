@@ -1,6 +1,6 @@
 <#
     Test Workflow Script
-    1. Downloads compiled artifacts (a.img, 100m.img.tar.xz) from server using SCP.
+    1. Downloads compiled artifacts (a.img, 100m.img.zip) from server using SCP.
     2. Decompresses the hard disk image.
     3. Launches Bochs with debugger.
 #>
@@ -28,7 +28,7 @@ Write-Host "(Please enter your password if prompted)" -ForegroundColor Yellow
 
 # Construct remote paths
 $RemoteFloppy = "${RemotePath}/a.img"
-$RemoteHdd = "${RemotePath}/100m.img.tar.xz"
+$RemoteHdd = "${RemotePath}/100m.img.zip"
 
 # Download files to ProjectRoot
 # Note: Using scp separately to ensure clarity, or could be combined.
@@ -48,20 +48,19 @@ try {
 }
 
 # 3. Decompress HDD Image
-Write-Host ">>> [2/3] Decompressing 100m.img.tar.xz..." -ForegroundColor Cyan
+Write-Host ">>> [2/3] Decompressing 100m.img.zip..." -ForegroundColor Cyan
 
-if (Test-Path "100m.img.tar.xz") {
+if (Test-Path "100m.img.zip") {
     try {
-        # Using tar (Git Bash/Windows built-in tar) with xz support (-J)
-        # Force overwrite (-k is not used)
-        tar -xJf 100m.img.tar.xz
+	# Use PowerShell native command to unzip, -Force to overwrite old files
+        Expand-Archive -Path "100m.img.zip" -DestinationPath . -Force
     } catch {
-        Write-Error "Decompression failed. Ensure 'tar' is in your PATH and supports xz."
+        Write-Error "Decompression failed: $_"
         Pop-Location
         exit 1
     }
 } else {
-    Write-Error "Error: 100m.img.tar.xz not found after download."
+    Write-Error "Error: 100m.img.zip not found after download."
     Pop-Location
     exit 1
 }
