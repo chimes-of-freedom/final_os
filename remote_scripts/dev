@@ -4,46 +4,46 @@
 
 # Check if we are in the correct directory
 if [ ! -f "Makefile" ]; then
-    echo "Error: Makefile not found. Please run this command in the project root."
-    exit 1
+	echo "Error: Makefile not found. Please run this command in the project root."
+	exit 1
 fi
 
 if [ "$1" == "image" ]; then
-    echo ">>> [dev] 1. Restoring base image..."
-    # Decompress the raw sparse image (reset disk state)
-    if [ -f "80m.img.tar.gz" ]; then
-        tar xzf 80m.img.tar.gz
-    else
-        echo "Warning: 80m.img.tar.gz not found. Using existing 80m.img if present."
-    fi
+	echo ">>> [dev] 1. Restoring base image..."
+	# Decompress the raw sparse image (reset disk state)
+	if [ -f "80m.img.tar.gz" ]; then
+		tar xzf 80m.img.tar.gz
+	else
+		echo "Warning: 80m.img.tar.gz not found. Using existing 80m.img if present."
+	fi
 
-    echo ">>> [dev] 2. Installing commands (make install in command/)..."
-    cd command
-    make install
+	echo ">>> [dev] 2. Building project (make image)..."
+	make image
+	if [ $? -ne 0 ]; then
+		echo ">>> [dev] Build failed during 'make image'."
+		exit 1
+	fi
 
-    if [ $? -ne 0 ]; then
-	echo ">>> [dev] Command installation failed."
-	exit 1
-    fi
+	echo ">>> [dev] 3. Installing commands (make install in command/)..."
+	cd command
+	make install
+	if [ $? -ne 0 ]; then
+		echo ">>> [dev] Command installation failed."
+		exit 1
+	fi
+	cd ..
 
-    cd ..
-    echo ">>> [dev] 3. Building project (make image)..."
-    make image
+	echo ">>> [dev] 4. Compressing artifact..."
+	rm -f 80m.img.zip
+	zip 80m.img.zip 80m.img
+	if [ $? -ne 0 ]; then
+		echo ">>> [dev] Compression failed."
+		exit 1
+	fi
 
-    # Check if make succeeded
-    if [ $? -eq 0 ]; then
-        echo ">>> [dev] 3. Compressing artifact..."
-        
-        rm -f 80m.img.zip
-        zip 80m.img.zip 80m.img
-        
-        echo ">>> [dev] Build Success! Artifact ready: 80m.img.zip"
-    else
-        echo ">>> [dev] Build Failed."
-        exit 1
-    fi
+	echo ">>> [dev] Build Success! Artifact ready: 80m.img.zip"
 else
-    # Pass all other arguments directly to make
-    echo ">>> [dev] Executing: make $@"
-    make "$@"
+	# Pass all other arguments directly to make
+	echo ">>> [dev] Executing: make $@"
+	make "$@"
 fi
