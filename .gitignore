@@ -1,17 +1,12 @@
-a.img
-100m.img
-100m.img.zip
+*.img
+*.img.zip
 
 bochsout.txt
 krnl.map
 kernel.bin.asm
 
-boot/boot.bin
-boot/loader.bin
-kernel.bin
-
-kernel/*.o
-lib/*.o
+*.bin
+*.o
 
 .vscode/sftp.json
 dev/dev_config.json

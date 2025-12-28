@@ -11,23 +11,33 @@ fi
 if [ "$1" == "image" ]; then
     echo ">>> [dev] 1. Restoring base image..."
     # Decompress the raw sparse image (reset disk state)
-    if [ -f "100m.img.tar.gz" ]; then
-        tar xzf 100m.img.tar.gz
+    if [ -f "80m.img.tar.gz" ]; then
+        tar xzf 80m.img.tar.gz
     else
-        echo "Warning: 100m.img.tar.gz not found. Using existing 100m.img if present."
+        echo "Warning: 80m.img.tar.gz not found. Using existing 80m.img if present."
     fi
 
-    echo ">>> [dev] 2. Building project (make image)..."
+    echo ">>> [dev] 2. Installing commands (make install in command/)..."
+    cd command
+    make install
+
+    if [ $? -ne 0 ]; then
+	echo ">>> [dev] Command installation failed."
+	exit 1
+    fi
+
+    cd ..
+    echo ">>> [dev] 3. Building project (make image)..."
     make image
 
     # Check if make succeeded
     if [ $? -eq 0 ]; then
         echo ">>> [dev] 3. Compressing artifact..."
         
-        rm -f 100m.img.zip
-        zip 100m.img.zip 100m.img
+        rm -f 80m.img.zip
+        zip 80m.img.zip 80m.img
         
-        echo ">>> [dev] Build Success! Artifact ready: 100m.img.zip"
+        echo ">>> [dev] Build Success! Artifact ready: 80m.img.zip"
     else
         echo ">>> [dev] Build Failed."
         exit 1

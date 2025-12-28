@@ -28,7 +28,7 @@ Write-Host "(Please enter your password if prompted)" -ForegroundColor Yellow
 
 # Construct remote paths
 $RemoteFloppy = "${RemotePath}/a.img"
-$RemoteHdd = "${RemotePath}/100m.img.zip"
+$RemoteHdd = "${RemotePath}/80m.img.zip"
 
 # Download files to ProjectRoot
 # Note: Using scp separately to ensure clarity, or could be combined.
@@ -48,19 +48,19 @@ try {
 }
 
 # 3. Decompress HDD Image
-Write-Host ">>> [2/3] Decompressing 100m.img.zip..." -ForegroundColor Cyan
+Write-Host ">>> [2/3] Decompressing 80m.img.zip..." -ForegroundColor Cyan
 
-if (Test-Path "100m.img.zip") {
+if (Test-Path "80m.img.zip") {
     try {
 	# Use PowerShell native command to unzip, -Force to overwrite old files
-        Expand-Archive -Path "100m.img.zip" -DestinationPath . -Force
+        Expand-Archive -Path "80m.img.zip" -DestinationPath . -Force
     } catch {
         Write-Error "Decompression failed: $_"
         Pop-Location
         exit 1
     }
 } else {
-    Write-Error "Error: 100m.img.zip not found after download."
+    Write-Error "Error: 80m.img.zip not found after download."
     Pop-Location
     exit 1
 }
