@@ -19,6 +19,7 @@
 
 - `fs/main.c`：`mkfs()` 中保留 0 号 inode 作为无效 inode 号，但未为其在 inodes 数组中保留空间，导致 inode 号和 inode 在数组中的索引错位。使用时须注意。
 - `fs/main.c`：`mkfs()` 中 `sb.nr_smap_sects` 根据分区扇区数计算而来，但实际上 sector map 映射的是数据扇区即 `sb.n_1st_sect`，并且保留 bit 0。
+- 对于字符设备文件，`struct inode::i_start_sector` 表示其设备号。
 
 区分 `mkfs()` 涉及的结构和对应索引关系的教材原话：
 
