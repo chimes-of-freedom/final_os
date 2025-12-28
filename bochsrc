@@ -34,3 +34,5 @@ mouse: enabled=0
 keyboard: user_shortcut=none, keymap=/home/nevermind/bochs-3.0/gui/keymaps/sdl2-pc-us.map
 
 display_library: sdl2
+
+magic_break: enabled=1

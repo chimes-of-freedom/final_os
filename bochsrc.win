@@ -31,3 +31,5 @@ log: bochsout.txt
 mouse: enabled=0
 
 keyboard: user_shortcut=none
+
+magic_break: enabled=1
