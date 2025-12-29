@@ -22,14 +22,14 @@
                     "ignoreFailures": true
                 },
                 {
-                    // 设置架构为 32位 x86 (Orange OS 是 32位系统)
+                    // 设置架构
                     "description": "Set architecture to i386",
                     "text": "set architecture i386",
                     "ignoreFailures": false
                 },
                 {
                     // 可选：如果断点不对，可能需要手动加载符号偏移
-                    // 比如 Orange OS 内核通常加载在物理地址 0x30400
+                    // 比如假设 Orange OS 内核加载在物理地址 0x30400
                     // "text": "add-symbol-file kernel.elf 0x30400",
                     // 通常 GDB 读取 ELF 头部能自动识别，但在实模式/保护模式切换初期可能需要手动干预
                     "description": "Load symbols", 
