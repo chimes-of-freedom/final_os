@@ -27,9 +27,6 @@ boot: a
 # where do we send log messages?
 log: bochsout.txt
 
-# log COM1 output (used by DEBUG_UNTAR_WRITE_TRACE)
-com1: enabled=1, mode=file, dev="E:/Resources/final_os/serial.log"
-
 # disable the mouse
 mouse: enabled=0
 
