@@ -167,7 +167,7 @@ enum msgtype {
 	HARD_INT = 1,
 
 	/* SYS task */
-	GET_TICKS, GET_PID, GET_RTC_TIME,
+	GET_TICKS, GET_PID, GET_RTC_TIME, GET_PROCS,	/* 获取进程表信息 */
 
 	/* FS */
 	OPEN, CLOSE, READ, WRITE, LSEEK, STAT, UNLINK,

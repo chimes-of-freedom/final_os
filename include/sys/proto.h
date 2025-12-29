@@ -5,6 +5,12 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef __PROTO_H__
+#define __PROTO_H__
+
+#include "console.h"
+#include "tty.h"
+
 /* kliba.asm */
 PUBLIC void	out_byte(u16 port, u8 value);
 PUBLIC u8	in_byte(u16 port);
@@ -147,3 +153,5 @@ PUBLIC  void    sys_call();             /* int_handler */
 /* 系统调用 - 用户级 */
 PUBLIC	int	sendrec(int function, int src_dest, MESSAGE* p_msg);
 PUBLIC	int	printx(char* str);
+
+#endif
