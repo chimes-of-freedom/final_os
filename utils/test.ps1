@@ -26,21 +26,25 @@ $RemotePath = $Config.RemotePath
 Write-Host ">>> [1/3] Downloading artifacts from $HostIP..." -ForegroundColor Cyan
 Write-Host "(Please enter your password if prompted)" -ForegroundColor Yellow
 
-# Construct remote paths
-$RemoteFloppy = "${RemotePath}/a.img"
-$RemoteHdd = "${RemotePath}/80m.img.zip"
-
 # Download files to ProjectRoot
 # Note: Using scp separately to ensure clarity, or could be combined.
 # We download to current directory (ProjectRoot) context.
 Push-Location $ProjectRoot
 
 try {
-    # Download Floppy
-    scp -P $Port "$User@${HostIP}:$RemoteFloppy" .
-    
-    # Download Compressed HDD
-    scp -P $Port "$User@${HostIP}:$RemoteHdd" .
+    # Download Floppy, HDD image, and kernel ELF separately; some servers disable brace expansion
+    $Artifacts = @(
+        "${RemotePath}/a.img",
+        "${RemotePath}/80m.img.zip",
+        "${RemotePath}/kernel.elf"
+    )
+
+    foreach ($remoteFile in $Artifacts) {
+        & scp -P $Port "$User@${HostIP}:${remoteFile}" .
+        if ($LASTEXITCODE -ne 0) {
+            throw "SCP failed for ${remoteFile} (exit $LASTEXITCODE)"
+        }
+    }
 } catch {
     Write-Error "SCP Download failed. Please check your connection or if 'dev image' was run on server."
     Pop-Location
@@ -72,7 +76,7 @@ if (Test-Path "bochsrc.win") {
     # Check if bochs is in PATH, otherwise this will error out
     try {
         # -q: skip start menu, -f: config file
-        bochs -q -f bochsrc.win -debugger
+        bochs -q -f bochsrc.win
     } catch {
         Write-Error "Failed to start Bochs. Is it installed and in your PATH?"
     }

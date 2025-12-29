@@ -19,8 +19,8 @@ DASM		= objdump
 CC		= gcc
 LD		= ld
 ASMBFLAGS	= -I boot/include/
-ASMKFLAGS	= -I include/ -I include/sys/ -f elf
-CFLAGS		= -I include/ -I include/sys/ -c -fno-builtin -Wall -fno-stack-protector
+ASMKFLAGS	= -I include/ -I include/sys/ -f elf -g
+CFLAGS		= -I include/ -I include/sys/ -c -fno-builtin -Wall -fno-stack-protector -g
 #CFLAGS		= -I include/ -c -fno-builtin -fno-stack-protector -fpack-struct -Wall
 LDFLAGS		= -Ttext $(ENTRYPOINT) -Map krnl.map
 DASMFLAGS	= -D
@@ -66,7 +66,7 @@ clean :
 	rm -f $(OBJS) $(LOBJS)
 
 realclean :
-	rm -f $(OBJS) $(LOBJS) $(LIB) $(ORANGESBOOT) $(ORANGESKERNEL)
+	rm -f $(OBJS) $(LOBJS) $(LIB) $(ORANGESBOOT) $(ORANGESKERNEL) kernel.elf
 
 disasm :
 	$(DASM) $(DASMFLAGS) $(ORANGESKERNEL) > $(DASMOUTPUT)
@@ -84,7 +84,8 @@ boot/loader.bin : boot/loader.asm boot/include/load.inc boot/include/fat12hdr.in
 	$(ASM) $(ASMBFLAGS) -o $@ $<
 
 $(ORANGESKERNEL) : $(OBJS) $(LIB)
-	$(LD) $(LDFLAGS) -o $(ORANGESKERNEL) $^
+	$(LD) $(LDFLAGS) -o kernel.elf $^
+	objcopy --strip-debug kernel.elf $(ORANGESKERNEL)
 
 $(LIB) : $(LOBJS)
 	$(AR) $(ARFLAGS) $@ $^

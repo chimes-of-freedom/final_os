@@ -27,9 +27,15 @@ boot: a
 # where do we send log messages?
 log: bochsout.txt
 
+# log COM1 output (used by DEBUG_UNTAR_WRITE_TRACE)
+com1: enabled=1, mode=file, dev="E:/Resources/final_os/serial.log"
+
 # disable the mouse
 mouse: enabled=0
 
 keyboard: user_shortcut=none
 
 magic_break: enabled=1
+
+# open listener for gdbstub on port 1234
+# gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0

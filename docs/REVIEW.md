@@ -46,3 +46,7 @@
 
 - 已知 bug：TTY0 输入任意一个字符系统即死锁。
 - 已知 bug：TTY1/TTY2 输入 `pwd` 命令即 `assert(p_who_wanna_receive->p_flags == RECEIVING) failed`。
+
+## 当前版本（基于 `chapter10/e`）
+
+- [x] `kernel/proc.c`：`msg_receive()` 结尾的断言应该全部禁用，因为在设置 `RECEIVING` 位后可能立即被 `inform_int()` 删除。

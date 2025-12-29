@@ -33,6 +33,7 @@
    1. `dev.ps1` 通过 `scp` 将服务器上的 `a.img` 和 `100m.img.zip` 拉取到本地；
    2. `dev.ps1` 解压 `100m.img.zip` 为 `100.img`；
    3. `dev.ps1` 执行 `bochs -q -f bochsrc.win -debugger` 启动 Bochs 调试。
+   4. 注意：如果需要 GDB 远程调试则需要在 Bochs 配置文件中开启对应功能，然后在 Bochs 启动后按下 F5。
 7. Windows 上测试完成后进行 Commit，具体步骤为：
    1. `git checkout -b tag/content`
    2. `git add .`；

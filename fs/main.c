@@ -256,7 +256,7 @@ PRIVATE void mkfs()
 	WR_SECT(ROOT_DEV, 2);
 
 	/************************/
-	/*      secter map      */
+	/*      sector map      */
 	/************************/
 	memset(fsbuf, 0, SECTOR_SIZE);
 	int nr_sects = NR_DEFAULT_FILE_SECTS + 1;

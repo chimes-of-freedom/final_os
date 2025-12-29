@@ -24,7 +24,11 @@
         "krnl.map",
         "kernel.bin.asm",
         "*.bin",
-        "*.o"
+        "*.o",
+	"*.log",
+	"*.lock",
+	"*.elf",
+	"*.tar"
     ],
     "watcher": {
         "files": "**/*",
