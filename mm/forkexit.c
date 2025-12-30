@@ -22,14 +22,16 @@
 
 
 PRIVATE void cleanup(struct proc * proc);
+PRIVATE void abort_ipc(struct proc * target, int retval);
+PRIVATE void do_process_exit(int pid, int status);
 
 /*****************************************************************************
  *                                do_fork
  *****************************************************************************/
 /**
- * Perform the fork() syscall.
- * 
+ * @brief Perform the fork() syscall.
  * @return  Zero if success, otherwise -1.
+ * @todo 保持此处的原子性，防止多个进程竞争同一个 slot
  *****************************************************************************/
 PUBLIC int do_fork()
 {
@@ -180,8 +182,146 @@ PUBLIC int do_fork()
  *****************************************************************************/
 PUBLIC void do_exit(int status)
 {
-	int i;
 	int pid = mm_msg.source; /* PID of caller */
+
+	abort_ipc(&proc_table[pid], -1);
+	do_process_exit(pid, status);
+}
+
+/*****************************************************************************
+ *                                do_kill
+ *****************************************************************************/
+
+/**
+ * @brief 处理 `kill()` 发送的结束指定进程的消息
+ * @return 0 代表成功结束进程
+ */
+PUBLIC int do_kill()
+{
+	int pid = mm_msg.KILL_PID;
+	int caller = mm_msg.source;
+	int sig = mm_msg.KILL_SIG;
+	int force = mm_msg.KILL_FORCE;
+	(void)force;
+
+	if (sig != SIG_TERM && sig != SIG_KILL) {
+		return -1;
+	}
+
+	/* do not kill kernel tasks or invalid pid */
+	if (pid < NR_TASKS + NR_NATIVE_PROCS || pid >= NR_TASKS + NR_PROCS) {
+		return -1;
+	}
+	if (pid == INIT) {
+		return -1; /* keep init alive */
+	}
+	if (pid == caller) {
+		return -1; /* keep caller alive */
+	}
+
+	struct proc * target = &proc_table[pid];
+	if (target->p_flags == FREE_SLOT) {
+		return -1; /* already gone */
+	}
+
+	abort_ipc(target, -1);
+	do_process_exit(pid, -1);
+
+	return 0;
+}
+
+/*****************************************************************************
+ *                                abort_ipc
+ *****************************************************************************/
+
+/**
+ * @brief 处理待结束进程相关 IPC 操作
+ */
+PRIVATE void abort_ipc(struct proc * target, int retval)
+{
+	/* MM 在 ring1 会被时钟中断抢占，短暂关中断确保队列清理的原子性 */
+	disable_int();
+
+	int pid = proc2pid(target);
+
+	/* wake senders queued on target */
+	struct proc * sender = target->q_sending;
+	while (sender) {
+		struct proc * next = sender->next_sending;
+		sender->p_flags &= ~SENDING;
+		sender->p_sendto = NO_TASK;
+		sender->p_msg = 0;
+		sender->next_sending = 0;
+		sender = next;
+	}
+	target->q_sending = 0;
+
+	/* detach target from destination queue if it was sending */
+	if (target->p_flags & SENDING) {
+		int dest = target->p_sendto;
+		if (dest >= 0 && dest < NR_TASKS + NR_PROCS) {
+			struct proc * p_dest = &proc_table[dest];
+			struct proc * q = p_dest->q_sending;
+			struct proc * prev = 0;
+			while (q) {
+				if (q == target) {
+					if (prev) {
+						prev->next_sending = q->next_sending;
+					}
+					else {
+						p_dest->q_sending = q->next_sending;
+					}
+					break;
+				}
+				prev = q;
+				q = q->next_sending;
+			}
+		}
+	}
+
+	/* clear target's own IPC state */
+	target->p_flags &= ~(SENDING | RECEIVING);
+	target->p_sendto = NO_TASK;
+	target->p_recvfrom = NO_TASK;
+	target->p_msg = 0;
+	target->next_sending = 0;
+	target->has_int_msg = 0;
+
+	/* unblock peers waiting specifically for target */
+	int i;
+	for (i = 0; i < NR_TASKS + NR_PROCS; i++) {
+		struct proc * p = &proc_table[i];
+		if ((p->p_flags & RECEIVING) && p->p_recvfrom == pid) {
+			if (p->p_msg) {
+				MESSAGE * m = (MESSAGE*)va2la(i, p->p_msg);
+				m->type = SYSCALL_RET;
+				m->RETVAL = retval;
+			}
+			p->p_flags &= ~RECEIVING;
+			p->p_recvfrom = NO_TASK;
+			p->p_msg = 0;
+		}
+		if ((p->p_flags & SENDING) && p->p_sendto == pid) {
+			p->p_flags &= ~SENDING;
+			p->p_sendto = NO_TASK;
+			p->p_msg = 0;
+			p->next_sending = 0;
+		}
+	}
+
+	enable_int();
+}
+
+/*****************************************************************************
+ *                             do_process_exit
+ *****************************************************************************/
+
+/**
+ * @brief `do_exit()` 和 `do_kil()` 共用的退出路径
+ */
+PRIVATE void do_process_exit(int pid, int status)
+{
+	int i;
 	int parent_pid = proc_table[pid].p_parent;
 	struct proc * p = &proc_table[pid];
 

@@ -23,6 +23,11 @@
 PRIVATE int read_register(char reg_addr);
 PRIVATE u32 get_rtc_time(struct time *t);
 
+/* 简单检查回复目标是否仍存在 */
+static inline int can_reply(int pid) {
+	return !(proc_table[pid].p_flags & FREE_SLOT);
+}
+
 /*****************************************************************************
  *                                task_sys
  *****************************************************************************/
@@ -42,12 +47,16 @@ PUBLIC void task_sys()
 		switch (msg.type) {
 		case GET_TICKS:
 			msg.RETVAL = ticks;
-			send_recv(SEND, src, &msg);
+			if (can_reply(src)) {
+				send_recv(SEND, src, &msg);
+			}
 			break;
 		case GET_PID:
 			msg.type = SYSCALL_RET;
 			msg.PID = src;
-			send_recv(SEND, src, &msg);
+			if (can_reply(src)) {
+				send_recv(SEND, src, &msg);
+			}
 			break;
 		/* 获取进程表信息 */
 		case GET_PROCS: {
@@ -79,7 +88,9 @@ PUBLIC void task_sys()
 
 			msg.type = SYSCALL_RET;
 			msg.RETVAL = copied;
-			send_recv(SEND, src, &msg);
+			if (can_reply(src)) {
+				send_recv(SEND, src, &msg);
+			}
 			break;
 		}
 		case GET_RTC_TIME:
@@ -88,7 +99,9 @@ PUBLIC void task_sys()
 			phys_copy(va2la(src, msg.BUF),
 				  va2la(TASK_SYS, &t),
 				  sizeof(t));
-			send_recv(SEND, src, &msg);
+			if (can_reply(src)) {
+				send_recv(SEND, src, &msg);
+			}
 			break;
 		default:
 			panic("unknown msg type");
