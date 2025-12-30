@@ -112,4 +112,5 @@ int main(int argc, char *argv[])
 
 usage:
 	printf("Usage: ls [-h]\n");
+	return 0;
 }
