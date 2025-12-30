@@ -1,7 +1,6 @@
 #include "stdio.h"
 #include "fs.h"
-#include "const.h"
-#include "proto.h"
+#include "string.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +16,11 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	int copy_len = min(len, MAX_FILENAME_LEN);
+	int copy_len = len;
+	if (len > MAX_FILENAME_LEN) {
+		printf("touch: Waring: too long filename will be truncated\n");
+		copy_len = MAX_FILENAME_LEN;
+	}
 
 	char name[MAX_FILENAME_LEN + 1];
 	int i;
@@ -27,7 +30,7 @@ int main(int argc, char *argv[])
 
 	char path[MAX_PATH];
 	path[0] = '/';
-	strcpy(path + 1, name);
+	memcpy(path + 1, name, copy_len);
 	path[copy_len + 1] = '\0';
 
 	int fd = open(path, O_RDWR);
