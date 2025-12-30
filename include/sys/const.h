@@ -139,7 +139,8 @@
 #define TASK_HD		2
 #define TASK_FS		3
 #define TASK_MM		4
-#define INIT		5
+#define TASK_LOG 	5
+#define INIT		6
 #define ANY		(NR_TASKS + NR_PROCS + 10)
 #define NO_TASK		(NR_TASKS + NR_PROCS + 20)
 
@@ -185,6 +186,16 @@ enum msgtype {
 
 	/* TTY, SYS, FS, MM, etc */
 	SYSCALL_RET,
+
+	/* LOG */
+	POST_LOG,
+	SWITCH_LOG,
+	CLEAR_LOG,
+	GET_PID_LOG,
+	BLOCK_LOG,
+	RECENT_LOG,
+	FREEZE_LOG,
+	LOG_RET,
 
 	/* message type for drivers */
 	DEV_OPEN = 1001,
@@ -303,6 +314,7 @@ enum kill_sig {
 
 #define	NR_DEFAULT_FILE_SECTS	2048 /* 2048 * 512 = 1MB */
 
-
+#define MAX_LOG_CNT 80
+#define MAX_LOG_LEN 80
 
 #endif /* _ORANGES_CONST_H_ */

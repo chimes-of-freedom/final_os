@@ -80,6 +80,14 @@ PUBLIC void dump_tty_buf();	/* for debug only */
 /* systask.c */
 PUBLIC void task_sys();
 
+/* log.c */
+PUBLIC void task_log();
+PUBLIC void msgtype_interpret(int msgtype, char* buf);
+PUBLIC void post_log2(const char* fmt, ...);
+
+/* lib/logger.c*/
+PUBLIC void post_log(const char* fmt, ...);
+
 /* fs/main.c */
 PUBLIC void			task_fs();
 PUBLIC int			rw_sector(int io_type, int dev, u64 pos,

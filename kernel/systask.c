@@ -44,6 +44,10 @@ PUBLIC void task_sys()
 		send_recv(RECEIVE, ANY, &msg);
 		int src = msg.source;
 
+		char tmpbuf[20];
+		msgtype_interpret(msg.type, tmpbuf);
+		post_log2("systask: handle %s", tmpbuf);
+
 		switch (msg.type) {
 		case GET_TICKS:
 			msg.RETVAL = ticks;

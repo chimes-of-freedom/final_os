@@ -8,6 +8,8 @@
 #ifndef	_ORANGES_TYPE_H_
 #define	_ORANGES_TYPE_H_
 
+#include "const.h"
+
 /* routine types */
 #define	PUBLIC		/* PUBLIC is the opposite of PRIVATE */
 #define	PRIVATE	static	/* PRIVATE x limits the scope of x */
@@ -67,5 +69,11 @@ struct boot_params {
 	unsigned char *	kernel_file;	/* addr of kernel file */
 };
 
+typedef struct struct_log
+{
+	char text[MAX_LOG_LEN];
+	int pid;
+	int len;
+}log_s;
 
 #endif /* _ORANGES_TYPE_H_ */
