@@ -49,6 +49,39 @@ PUBLIC void task_sys()
 			msg.PID = src;
 			send_recv(SEND, src, &msg);
 			break;
+		/* 获取进程表信息 */
+		case GET_PROCS: {
+			struct proc_info * user_buf = (struct proc_info *)msg.BUF;
+			int buf_size = msg.CNT;
+			int copied = 0;
+			struct proc_info info;
+			int i;
+
+			for (i = 0; i < NR_TASKS + NR_PROCS && copied < buf_size; i++) {
+				struct proc * p = &proc_table[i];
+				if (p->p_flags & FREE_SLOT) {
+					continue;
+				}
+
+				info.pid = i;
+				info.parent = p->p_parent;
+				info.priority = p->priority;
+				info.ticks = p->ticks;
+				info.flags = p->p_flags;
+				memcpy(info.name, p->name, sizeof(info.name));
+				info.name[sizeof(info.name) - 1] = 0;
+
+				phys_copy(va2la(src, user_buf + copied),
+					  va2la(TASK_SYS, &info),
+					  sizeof(info));
+				copied++;
+			}
+
+			msg.type = SYSCALL_RET;
+			msg.RETVAL = copied;
+			send_recv(SEND, src, &msg);
+			break;
+		}
 		case GET_RTC_TIME:
 			msg.type = SYSCALL_RET;
 			get_rtc_time(&t);

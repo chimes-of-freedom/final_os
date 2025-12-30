@@ -5,6 +5,10 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef __PROC_H__
+#define __PROC_H__
+
+#include "protect.h"
 
 struct stackframe {	/* proc_ptr points here				↑ Low			*/
 	u32	gs;		/* ┓						│			*/
@@ -76,6 +80,16 @@ struct task {
 	char	name[32];
 };
 
+/* 进程信息结构体 */
+struct proc_info {
+	int pid;
+	int parent;
+	int priority;
+	int ticks;
+	int flags;
+	char name[16];
+};
+
 #define proc2pid(x) (x - proc_table)
 
 /* Number of tasks & processes */
@@ -119,3 +133,4 @@ struct task {
 				STACK_SIZE_TESTB + \
 				STACK_SIZE_TESTC)
 
+#endif	// __PROC_H__
