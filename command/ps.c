@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 	(void)argv;
 	memset(&msg, 0, sizeof(msg));
 
+	post_log("I am in ps!!!%d", 589);
 	msg.type = GET_PROCS;
 	msg.BUF = table;
 	msg.CNT = MAX_PROCS;
