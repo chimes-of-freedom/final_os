@@ -277,7 +277,7 @@ void shabby_shell(const char * tty_name)
 		}
 		else {
 			close(fd);
-			int pid = fork();
+			int pid = fork(0);
 			if (pid != 0) { /* parent */
 				int s;
 				wait(&s);
@@ -313,10 +313,12 @@ void Init()
 			
 
 	char * tty_list[] = {"/dev_tty1", "/dev_tty2"};
+	char buf[PROC_NAME_LEN + 1];
 
 	int i;
 	for (i = 0; i < sizeof(tty_list) / sizeof(tty_list[0]); i++) {
-		int pid = fork();
+		sprintf(buf, "shell%d", i + 1);
+		int pid = fork(buf);
 		if (pid != 0) { /* parent process */
 			printf("[parent is running, child pid:%d]\n", pid);
 		}

@@ -127,7 +127,7 @@ PUBLIC	int	unlink		(const char *pathname);
 PUBLIC int	getpid		();
 
 /* lib/fork.c */
-PUBLIC int	fork		();
+PUBLIC int	fork		(char *name);
 
 /* lib/exit.c */
 PUBLIC void	exit		(int status);
