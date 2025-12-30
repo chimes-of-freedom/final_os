@@ -33,15 +33,15 @@ if [ "$1" == "image" ]; then
 	fi
 	cd ..
 
-	echo ">>> [dev] 4. Compressing artifact..."
-	rm -f 80m.img.zip
-	zip 80m.img.zip 80m.img
+	echo ">>> [dev] 4. Compressing artifacts..."
+	rm -f *.zip
+	zip artifacts.zip 80m.img a.img kernel.elf
 	if [ $? -ne 0 ]; then
 		echo ">>> [dev] Compression failed."
 		exit 1
 	fi
 
-	echo ">>> [dev] Build Success! Artifact ready: 80m.img.zip"
+	echo ">>> [dev] Build Success! Artifacts ready: artifacts.zip"
 else
 	# Pass all other arguments directly to make
 	echo ">>> [dev] Executing: make $@"
