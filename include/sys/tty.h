@@ -22,6 +22,7 @@ typedef struct s_tty
 	u32*	ibuf_head;		/* the next free slot */
 	u32*	ibuf_tail;		/* the val to be processed by TTY */
 	int	ibuf_cnt;		/* how many */
+	int	escape_pending;		/* 转义字符状态 */
 
 	int	tty_caller;
 	int	tty_procnr;
