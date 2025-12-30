@@ -14,8 +14,10 @@ PUBLIC void post_log(const char* fmt, ...)
 {
 	char buf[MAX_LOG_LEN * 10], real_buf[MAX_LOG_LEN];
 	int len = 0;
+
+	memset(buf, 0, sizeof(buf));
 	va_list arg = (va_list)((char*)(&fmt) + 4);
-	sprintf(buf, fmt, arg);
+	vsprintf(buf, fmt, arg);
 
 	len = min(strlen(buf), MAX_LOG_LEN - 1);
 	strcpy(real_buf, buf);
@@ -26,6 +28,6 @@ PUBLIC void post_log(const char* fmt, ...)
 	msg.type = POST_LOG;
 	msg.CNT = len;
 	msg.BUF = real_buf;
-	printf("%s", real_buf);
+
 	send_recv(SEND, TASK_LOG, &msg);
 }

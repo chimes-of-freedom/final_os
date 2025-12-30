@@ -48,6 +48,10 @@ PUBLIC void task_fs()
 		int src = fs_msg.source;
 		pcaller = &proc_table[src];
 
+		char tmpbuf[20];
+		msgtype_interpret(msgtype, tmpbuf);
+		post_log2("fs: handle %s", tmpbuf);
+		
 		switch (msgtype) {
 		case OPEN:
 			fs_msg.FD = do_open();

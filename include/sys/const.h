@@ -189,7 +189,12 @@ enum msgtype {
 
 	/* LOG */
 	POST_LOG,
-	GET_LOG,
+	SWITCH_LOG,
+	CLEAR_LOG,
+	GET_PID_LOG,
+	BLOCK_LOG,
+	RECENT_LOG,
+	LOG_RET,
 
 	/* message type for drivers */
 	DEV_OPEN = 1001,

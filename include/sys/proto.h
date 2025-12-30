@@ -82,6 +82,10 @@ PUBLIC void task_sys();
 
 /* log.c */
 PUBLIC void task_log();
+PUBLIC void msgtype_interpret(int msgtype, char* buf);
+PUBLIC void post_log2(const char* fmt, ...);
+
+/* lib/logger.c*/
 PUBLIC void post_log(const char* fmt, ...);
 
 /* fs/main.c */

@@ -19,13 +19,14 @@ static const char* state_from_flags(int flags)
 
 int main(int argc, char *argv[])
 {
+	post_log("Enter ps");
+
 	struct proc_info table[MAX_PROCS];
 	MESSAGE msg;
 	(void)argc;
 	(void)argv;
 	memset(&msg, 0, sizeof(msg));
 
-	post_log("I am in ps!!!%d", 589);
 	msg.type = GET_PROCS;
 	msg.BUF = table;
 	msg.CNT = MAX_PROCS;
@@ -51,5 +52,6 @@ int main(int argc, char *argv[])
 		       p->name);
 	}
 
+	post_log("Leave ps");
 	return 0;
 }

@@ -95,6 +95,10 @@ PUBLIC void task_tty()
 
 		TTY* ptty = &tty_table[msg.DEVICE];
 
+		char tmpbuf[20];
+		msgtype_interpret(msg.type, tmpbuf);
+		post_log2("tty: handle %s", tmpbuf);
+
 		switch (msg.type) {
 		case DEV_OPEN:
 			reset_msg(&msg);

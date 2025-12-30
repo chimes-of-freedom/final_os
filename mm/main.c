@@ -43,6 +43,10 @@ PUBLIC void task_mm()
 
 		int msgtype = mm_msg.type;
 
+		char tmpbuf[20];
+		msgtype_interpret(msgtype, tmpbuf);
+		post_log2("mm: handle %s", tmpbuf);
+
 		switch (msgtype) {
 		case FORK:
 			mm_msg.RETVAL = do_fork();
