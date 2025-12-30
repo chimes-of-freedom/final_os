@@ -208,7 +208,7 @@ PRIVATE void mkfs()
 	sb.nr_inode_sects = sb.nr_inodes * INODE_SIZE / SECTOR_SIZE;
 	sb.nr_sects	  = geo.size; /* partition size in sector */
 	sb.nr_imap_sects  = 1;
-	sb.nr_smap_sects  = sb.nr_sects / bits_per_sect + 1;
+	sb.nr_smap_sects  = sb.nr_sects / bits_per_sect + (!!(sb.nr_sects % bits_per_sect));
 	sb.n_1st_sect	  = 1 + 1 +   /* boot sector & super block */
 		sb.nr_imap_sects + sb.nr_smap_sects + sb.nr_inode_sects;
 	sb.root_inode	  = ROOT_INODE;

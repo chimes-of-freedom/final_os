@@ -178,7 +178,7 @@ PRIVATE void hd_rdwt(MESSAGE * p)
 	u32 sect_nr = (u32)(pos >> SECTOR_SIZE_SHIFT); /* pos / SECTOR_SIZE */
 	int logidx = (p->DEVICE - MINOR_hd1a) % NR_SUB_PER_DRIVE;
 	sect_nr += p->DEVICE < MAX_PRIM ?
-		hd_info[drive].primary[p->DEVICE].base :
+		hd_info[drive].primary[p->DEVICE % (NR_PRIM_PER_DRIVE)].base :
 		hd_info[drive].logical[logidx].base;
 
 	struct hd_cmd cmd;
@@ -233,7 +233,7 @@ PRIVATE void hd_ioctl(MESSAGE * p)
 		void * dst = va2la(p->PROC_NR, p->BUF);
 		void * src = va2la(TASK_HD,
 				   device < MAX_PRIM ?
-				   &hdi->primary[device] :
+				   &hdi->primary[device % (NR_PRIM_PER_DRIVE)] :
 				   &hdi->logical[(device - MINOR_hd1a) %
 						NR_SUB_PER_DRIVE]);
 
