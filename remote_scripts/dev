@@ -42,6 +42,13 @@ if [ "$1" == "image" ]; then
 	fi
 
 	echo ">>> [dev] Build Success! Artifacts ready: artifacts.zip"
+
+	if [ -f "artifacts.zip" ]; then
+		echo ">>> [dev] Cleaning up intermediate files..."
+		rm -f artifacts.zip 80m.img a.img kernel.elf
+	else 
+		echo ">>> [dev] Artifacts.zip not found, skipping cleanup."
+	fi
 else
 	# Pass all other arguments directly to make
 	echo ">>> [dev] Executing: make $@"

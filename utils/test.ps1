@@ -27,8 +27,6 @@ Write-Host ">>> [1/4] Downloading artifacts from $HostIP..." -ForegroundColor Cy
 Write-Host "(Please enter your password if prompted)" -ForegroundColor Yellow
 
 # Download files to ProjectRoot
-# Note: Using scp separately to ensure clarity, or could be combined.
-# We download to current directory (ProjectRoot) context.
 Push-Location $ProjectRoot
 
 try {
