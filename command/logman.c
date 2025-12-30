@@ -43,6 +43,11 @@ int main(int argc, char *argv[])
 			msg.type = SWITCH_LOG;
 			send_recv(SEND, TASK_LOG, &msg);
 		}
+		else if (!strcmp(argv[1], "f")) 
+		{
+			msg.type = FREEZE_LOG;
+			send_recv(SEND, TASK_LOG, &msg);
+		}
 		else if (argc == 3 && !strcmp(argv[1], "p")) 
 		{
 			msg.type = GET_PID_LOG;
@@ -73,7 +78,8 @@ usage:
 	printf("    h - show help\n");
 	printf("    c - clear log\n");
 	printf("    r - print recent 10 logs\n");
-	printf("    s - stop/restart log\n");
+	printf("    s - stop/restart writing log\n");
+	printf("    f - unfreeze/freeze log\n");
 	printf("    p <pid> - print recent 10 logs of certain pid\n");
 	printf("    b <pid> - block/unblock log from certain pid\n");
 	return 1;

@@ -102,6 +102,7 @@ PUBLIC void msgtype_interpret(int msgtype, char* buf)
 
 PUBLIC void post_log2(const char* fmt, ...)
 {
+	if(!log_enable) return;
 	char buf[MAX_LOG_LEN * 4], real_buf[MAX_LOG_LEN];
 	int len = 0;
 
@@ -203,6 +204,9 @@ PUBLIC void task_log()
 				break;
 			case BLOCK_LOG:
 				black_list[log_msg.CNT] ^= 1;
+				break;
+			case FREEZE_LOG:
+				log_enable ^= 1;
 				break;
 		}
 	}

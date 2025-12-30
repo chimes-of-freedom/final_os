@@ -194,6 +194,7 @@ enum msgtype {
 	GET_PID_LOG,
 	BLOCK_LOG,
 	RECENT_LOG,
+	FREEZE_LOG,
 	LOG_RET,
 
 	/* message type for drivers */
