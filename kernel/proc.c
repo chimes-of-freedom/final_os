@@ -72,6 +72,10 @@ PUBLIC int sys_sendrec(int function, int src_dest, MESSAGE* m, struct proc* p)
 	       src_dest == ANY ||
 	       src_dest == INTERRUPT);
 
+	if (p->p_flags == FREE_SLOT || proc_table[src_dest].p_flags == FREE_SLOT) {
+		return -1;
+	}
+
 	int ret = 0;
 	int caller = proc2pid(p);
 	MESSAGE* mla = (MESSAGE*)va2la(caller, m);

@@ -35,5 +35,6 @@ PUBLIC void exit(int status)
 	msg.STATUS	= status;
 
 	send_recv(BOTH, TASK_MM, &msg);
+	/* 不可达 */
 	assert(msg.type == SYSCALL_RET);
 }

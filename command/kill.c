@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 	}
 	if (argc == 1) {
 		printf("kill: Too few argument(s)\n");
+		goto usage;
 	}
 
 	int forced = argc == 3;

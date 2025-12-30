@@ -244,7 +244,7 @@ PRIVATE void abort_ipc(struct proc * target, int retval)
 
 	int pid = proc2pid(target);
 
-	/* wake senders queued on target */
+	/* 唤醒排队等待目标进程处理的消息的消息源 */
 	struct proc * sender = target->q_sending;
 	while (sender) {
 		struct proc * next = sender->next_sending;
@@ -256,7 +256,7 @@ PRIVATE void abort_ipc(struct proc * target, int retval)
 	}
 	target->q_sending = 0;
 
-	/* detach target from destination queue if it was sending */
+	/* 将目标进程送出但未受对方处理的消息剥离队列 */
 	if (target->p_flags & SENDING) {
 		int dest = target->p_sendto;
 		if (dest >= 0 && dest < NR_TASKS + NR_PROCS) {
@@ -279,15 +279,15 @@ PRIVATE void abort_ipc(struct proc * target, int retval)
 		}
 	}
 
-	/* clear target's own IPC state */
-	target->p_flags &= ~(SENDING | RECEIVING);
+	/* 清空 IPC 状态，但置 `RECEIVING` 防止被再次调度 */
+	target->p_flags = RECEIVING;
 	target->p_sendto = NO_TASK;
 	target->p_recvfrom = NO_TASK;
 	target->p_msg = 0;
 	target->next_sending = 0;
 	target->has_int_msg = 0;
 
-	/* unblock peers waiting specifically for target */
+	/* 唤醒等待目标进程回复的进程 */
 	int i;
 	for (i = 0; i < NR_TASKS + NR_PROCS; i++) {
 		struct proc * p = &proc_table[i];
