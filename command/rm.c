@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	const char *input = argv[1];
+	char *input = argv[1];
 	int len = strlen(input);
 	if (len == 0) {
 		printf("rm: Filename cannot be empty\n");
