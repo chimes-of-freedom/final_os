@@ -100,6 +100,11 @@ PUBLIC  int     printl(const char *fmt, ...);
 PUBLIC  int     vsprintf(char *buf, const char *fmt, va_list args);
 PUBLIC	int	sprintf(char *buf, const char *fmt, ...);
 
+/* 数字/字符串辅助 */
+PUBLIC int isdigit(int ch);
+PUBLIC int isnum(const char *str);
+PUBLIC int atoi(const char *str);
+
 /*--------*/
 /* 库函数 */
 /*--------*/

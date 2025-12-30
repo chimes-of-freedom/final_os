@@ -11,6 +11,9 @@
 #include "console.h"
 #include "tty.h"
 
+struct descriptor;
+struct proc;
+
 /* kliba.asm */
 PUBLIC void	out_byte(u16 port, u8 value);
 PUBLIC u8	in_byte(u16 port);
@@ -116,6 +119,7 @@ PUBLIC int		free_mem(int pid);
 PUBLIC int		do_fork();
 PUBLIC void		do_exit(int status);
 PUBLIC void		do_wait();
+PUBLIC int		do_kill();
 
 /* mm/exec.c */
 PUBLIC int		do_exec();

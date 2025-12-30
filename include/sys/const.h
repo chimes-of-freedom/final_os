@@ -178,7 +178,7 @@ enum msgtype {
 	SUSPEND_PROC, RESUME_PROC,
 
 	/* MM */
-	EXEC, WAIT,
+	EXEC, WAIT, KILL,
 
 	/* FS & MM */
 	FORK, EXIT,
@@ -212,6 +212,16 @@ enum msgtype {
 #define	PID		u.m3.m3i2
 #define	RETVAL		u.m3.m3i1
 #define	STATUS		u.m3.m3i1
+
+/* kill / signal (avoid RETVAL overlap) */
+#define	KILL_SIG	u.m3.m3i3 /* SIG_TERM or SIG_KILL */
+#define	KILL_PID	u.m3.m3i2 /* target pid */
+#define	KILL_FORCE	u.m3.m3i4 /* nonzero means force */
+
+enum kill_sig {
+	SIG_TERM = 15,
+	SIG_KILL = 9
+};
 
 
 
