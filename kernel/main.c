@@ -265,6 +265,10 @@ void shabby_shell(const char * tty_name)
 			}
 			p++;
 		} while(ch);
+
+		/* 检测是否为后台运行 */
+		int background = !strcmp(argv[argc - 1], "&");
+		argc -= background;
 		argv[argc] = 0;
 
 		int fd = open(argv[0], O_RDWR);
@@ -280,7 +284,12 @@ void shabby_shell(const char * tty_name)
 			int pid = fork(0);
 			if (pid != 0) { /* parent */
 				int s;
-				wait(&s);
+				/* 后台运行则打印 PID；子进程和 shell 竞争 tty */
+				if (background) {
+					printf("pid = %d\n", pid);
+				} else {
+					wait(&s);
+				}
 			}
 			else {	/* child */
 				execv(argv[0], argv);
