@@ -146,6 +146,7 @@ PRIVATE void init_tty(TTY* tty)
 	tty->tty_req_buf = 0;
 	tty->tty_left_cnt = 0;
 	tty->tty_trans_cnt = 0;
+	tty->escape_pending = 0;
 
 	init_screen(tty);
 }
@@ -262,13 +263,64 @@ PRIVATE void tty_dev_read(TTY* tty)
 PRIVATE void tty_dev_write(TTY* tty)
 {
 	while (tty->ibuf_cnt) {
+		int escaped_nl = 0;
 		char ch = *(tty->ibuf_tail);
 		tty->ibuf_tail++;
 		if (tty->ibuf_tail == tty->ibuf + TTY_IN_BYTES)
 			tty->ibuf_tail = tty->ibuf;
 		tty->ibuf_cnt--;
 
+		if (tty->escape_pending) {
+			tty->escape_pending = 0;
+			if (ch == 'n') {
+				ch = '\n';
+				escaped_nl = 1;
+			} else if (ch == '\\') {
+				ch = '\\';
+			} else {
+				if (tty->tty_left_cnt) {
+					char backslash = '\\';
+					if (backslash >= ' ' && backslash <= '~') {
+						out_char(tty->console, backslash);
+						assert(tty->tty_req_buf);
+						void *pb = tty->tty_req_buf + tty->tty_trans_cnt;
+						phys_copy(pb, (void *)va2la(TASK_TTY, &backslash), 1);
+						tty->tty_trans_cnt++;
+						tty->tty_left_cnt--;
+					}
+				}
+				/* 未识别转义，继续按原字符处理 */
+			}
+		} else if (ch == '\\') {
+			tty->escape_pending = 1;
+			continue;
+		}
+
 		if (tty->tty_left_cnt) {
+			if (ch == '\r') {
+				char nl = '\n';
+				out_char(tty->console, nl);
+
+				assert(tty->tty_req_buf);
+				void *p = tty->tty_req_buf + tty->tty_trans_cnt;
+				phys_copy(p, (void *)va2la(TASK_TTY, &nl), 1);
+
+				tty->tty_trans_cnt++;
+				tty->tty_left_cnt--;
+
+				if (tty->tty_left_cnt == 0) {
+					assert(tty->tty_procnr != NO_TASK);
+					MESSAGE msg;
+					msg.type = RESUME_PROC;
+					msg.PROC_NR = tty->tty_procnr;
+					msg.CNT = tty->tty_trans_cnt;
+					send_recv(SEND, tty->tty_caller, &msg);
+					tty->tty_left_cnt = 0;
+				}
+
+				continue;
+			}
+
 			if (ch >= ' ' && ch <= '~') { /* printable */
 				out_char(tty->console, ch);
 
@@ -287,6 +339,15 @@ PRIVATE void tty_dev_write(TTY* tty)
 			}
 
 			if (ch == '\n' || tty->tty_left_cnt == 0) {
+				if (escaped_nl && tty->tty_left_cnt) {
+					char nl = '\n';
+					assert(tty->tty_req_buf);
+					void *pn = tty->tty_req_buf + tty->tty_trans_cnt;
+					phys_copy(pn, (void *)va2la(TASK_TTY, &nl), 1);
+					tty->tty_trans_cnt++;
+					tty->tty_left_cnt--;
+				}
+
 				out_char(tty->console, '\n');
 
 				assert(tty->tty_procnr != NO_TASK);
