@@ -265,6 +265,13 @@ void shabby_shell(const char * tty_name)
 			}
 			p++;
 		} while(ch);
+
+		/* 检测是否为后台运行；空行直接继续 */
+		if (argc == 0) {
+			continue;
+		}
+		int background = (argc > 0 && !strcmp(argv[argc - 1], "&"));
+		argc -= background;
 		argv[argc] = 0;
 
 		int fd = open(argv[0], O_RDWR);
@@ -274,15 +281,33 @@ void shabby_shell(const char * tty_name)
 				write(1, rdbuf, r);
 				write(1, "}\n", 2);
 			}
-		}
-		else {
+		} else {
 			close(fd);
 			int pid = fork(0);
 			if (pid != 0) { /* parent */
 				int s;
+				if (background) {
+					printf("pid = %d\n", pid);
+					/**
+					 * 对于后台命令采用 double-fork：
+					 * 回收第一子进程避免僵尸，孙进程由 INIT 收尸
+					 */
+					wait(&s);
+					continue;
+				}
+				/* 前台：等待命令进程完成 */
 				wait(&s);
 			}
-			else {	/* child */
+			else { /* child */
+				if (background) {
+					int gpid = fork(0);
+					if (gpid != 0) {
+						exit(0); /* 让父进程只需回收这一层 */
+					}
+					/* 真正后台命令 */
+					execv(argv[0], argv);
+				}
+				/* 前台直接执行 */
 				execv(argv[0], argv);
 			}
 		}
