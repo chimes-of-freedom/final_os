@@ -59,7 +59,7 @@ struct super_block {
  * Note that this is the size of the struct in the device, \b NOT in memory.
  * The size in memory is larger because of some more members.
  */
-#define	SUPER_BLOCK_SIZE	56
+#define	SUPER_BLOCK_SIZE	(sizeof(struct super_block) - sizeof(int))
 
 /**
  * @struct inode
@@ -92,7 +92,7 @@ struct inode {
  * Note that this is the size of the struct in the device, \b NOT in memory.
  * The size in memory is larger because of some more members.
  */
-#define	INODE_SIZE	32
+#define	INODE_SIZE	(sizeof(struct inode) - 3 * sizeof(int))
 
 /**
  * @def   MAX_FILENAME_LEN
