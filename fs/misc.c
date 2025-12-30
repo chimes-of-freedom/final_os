@@ -34,7 +34,7 @@
 PUBLIC int do_stat()
 {
 	char pathname[MAX_PATH]; /* parameter from the caller */
-	char filename[MAX_PATH]; /* directory has been stipped */
+	char filename[MAX_PATH]; /* directory has been stripped */
 
 	/* get parameters from the message */
 	int name_len = fs_msg.NAME_LEN;	/* length of filename */
