@@ -53,7 +53,13 @@ PUBLIC int do_fork()
 	*p = proc_table[pid];
 	p->ldt_sel = child_ldt_sel;
 	p->p_parent = pid;
-	sprintf(p->name, "%s_%d", proc_table[pid].name, child_pid);
+
+	/* 自定义子进程名称 */
+	if (mm_msg.BUF) {
+		strcpy(p->name, mm_msg.BUF);
+	} else {
+		sprintf(p->name, "%s_%d", proc_table[pid].name, child_pid);
+	}
 
 	/* duplicate the process: T, D & S */
 	struct descriptor * ppd;

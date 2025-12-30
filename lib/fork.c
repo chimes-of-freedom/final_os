@@ -32,10 +32,15 @@
  *           On failure, a -1 will be returned in the parent's context, no
  *         child process will be created.
  *****************************************************************************/
-PUBLIC int fork()
+PUBLIC int fork(char *name)
 {
+	if (strlen(name) > PROC_NAME_LEN) {
+		return -1;
+	}
+
 	MESSAGE msg;
 	msg.type = FORK;
+	msg.BUF = name;
 
 	send_recv(BOTH, TASK_MM, &msg);
 	assert(msg.type == SYSCALL_RET);
