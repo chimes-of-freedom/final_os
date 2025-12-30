@@ -267,10 +267,6 @@ void shabby_shell(const char * tty_name)
 		} while(ch);
 		argv[argc] = 0;
 
-		if (!strcmp(argv[0], "ps")) {
-			printf("");
-		}
-
 		int fd = open(argv[0], O_RDWR);
 		if (fd == -1) {
 			if (rdbuf[0]) {
