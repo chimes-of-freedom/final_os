@@ -22,7 +22,7 @@
 #include "proto.h"
 
 PUBLIC void do_fork_test();
-
+PUBLIC void* malloc_free(int mode, int pid, int size, void* m);
 PRIVATE void init_mm();
 
 /*****************************************************************************
@@ -64,6 +64,13 @@ PUBLIC void task_mm()
 			break;
 		case KILL:
 			mm_msg.RETVAL = do_kill();
+			break;
+		case MALLOC:
+			mm_msg.RETVAL = malloc_free(1, src, mm_msg.CNT, 0);
+			break;
+		case FREE:
+			malloc_free(0, src, mm_msg.CNT, mm_msg.BUF);
+			reply = 0;
 			break;
 		default:
 			dump_msg("MM::unknown msg", &mm_msg);
@@ -142,4 +149,53 @@ PUBLIC int alloc_mem(int pid, int memsize)
 PUBLIC int free_mem(int pid)
 {
 	return 0;
+}
+
+PUBLIC void* malloc_free(int mode, int pid, int size, void* m)
+{
+	static int l[42], r[42];
+	static char m_bitmap[42][PROC_ORIGIN_STACK];
+	int i = 0;
+	void* ans = 0;
+	for(i = 0; i < 42; ++i)
+	{
+		l[i] = r[i] = 1;
+	}
+	if( mode )
+	{
+		if(l[pid] < size && size - l[pid] >= 1)
+		{
+			ans = (void*)(size - l[pid]);
+			l[pid] -= size;
+		}
+		else if (r[pid] + size < PROC_ORIGIN_STACK)
+		{
+			ans = (void*)(r[pid]);
+			r[pid] += size;
+		}
+		else
+		{
+			return (void*)0;
+		}
+		for(i = 0; i < size; ++i)
+		{
+			m_bitmap[pid][(int)ans + i] = 1;
+		}
+		return ans;
+	}
+	else
+	{
+		for(i = 0; i < size; ++i)
+		{
+			m_bitmap[pid][(int)m + i] = 0;
+		}
+		for(i = 1; i < r[pid]; ++i)
+		{
+			if(m_bitmap[pid][i] == 0)
+				l[pid] = i;
+			else
+				break;
+		}
+		return (void*)0;
+	}
 }
