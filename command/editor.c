@@ -39,17 +39,21 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	/* 追加到文件末尾：通过读完已有内容推动 fd_pos 到末尾 */
-	if (have_old && st.st_size > 0) {
-		char skipbuf[128];
+	/* 若有旧内容，按照文件大小读取并打印出来 */
+	if (have_old) {
+		printf("--- existing content of %s ---\n", name);
+		char showbuf[128];
 		int left = st.st_size;
 		while (left > 0) {
-			int chunk = left > (int)sizeof(skipbuf) ? (int)sizeof(skipbuf) : left;
-			int r = read(fd, skipbuf, chunk);
+			int want = left > (int)(sizeof(showbuf) - 1) ? (int)(sizeof(showbuf) - 1) : left;
+			int r = read(fd, showbuf, want);
 			if (r <= 0)
 				break;
+			showbuf[r] = '\0';
+			printf("%s", showbuf);
 			left -= r;
 		}
+		printf("\n--- append below ---\n");
 	}
 
 	printf("> Editing %s (append). Enter text, empty line to finish.\n", name);
