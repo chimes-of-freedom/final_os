@@ -17,10 +17,10 @@ static inline const char *type_label(int mode)
 }
 
 static inline const char *calc_unit(int *size) {
-	if (!(*size >> 8))	return "B  ";
-	*size >>= 8;
-	if (!(*size >> 8))	return "KiB";
-	*size >>= 8;
+	if (!(*size >> 10))	return "B  ";
+	*size >>= 10;
+	if (!(*size >> 10))	return "KiB";
+	*size >>= 10;
 	return "MiB";
 }
 
