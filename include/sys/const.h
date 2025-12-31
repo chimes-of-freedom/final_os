@@ -179,7 +179,7 @@ enum msgtype {
 	SUSPEND_PROC, RESUME_PROC,
 
 	/* MM */
-	EXEC, WAIT, KILL,
+	EXEC, WAIT, KILL, MALLOC, FREE, 
 
 	/* FS & MM */
 	FORK, EXIT,
