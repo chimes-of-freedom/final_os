@@ -322,7 +322,7 @@ PUBLIC void keyboard_read(TTY* tty)
 			key |= pad	? FLAG_PAD	: 0;
 
 			/* Shift+Enter 作为换行字符传递给上层（不作为结束标志） */
-			if (key == ENTER && (shift_l || shift_r)) {
+			if (key == (ENTER | FLAG_SHIFT_L)) {
 				key = '\r';
 			}
 

@@ -29,26 +29,33 @@ int main(int argc, char *argv[])
 	memcpy(path + 1, name, copy_len);
 	path[copy_len + 1] = '\0';
 
-	/* 清空旧文件，确保编辑结果覆盖 */
 	struct stat st;
-	if (stat(path, &st) == 0) {
-		if (unlink(path) != 0) {
-			printf("editor: Failed to prepare %s\n", name);
-			return 1;
-		}
-	}
+	int have_old = (stat(path, &st) == 0);
+	int flag_create = have_old ? 0 : O_CREAT;
 
-	int fd = open(path, O_CREAT | O_RDWR);
+	int fd = open(path, flag_create | O_RDWR);
 	if (fd < 0) {
 		printf("editor: Failed to open %s\n", name);
 		return 1;
 	}
 
-	printf("> Editing %s. Enter text, empty line to finish.\n", name);
+	/* 追加到文件末尾：通过读完已有内容推动 fd_pos 到末尾 */
+	if (have_old && st.st_size > 0) {
+		char skipbuf[128];
+		int left = st.st_size;
+		while (left > 0) {
+			int chunk = left > (int)sizeof(skipbuf) ? (int)sizeof(skipbuf) : left;
+			int r = read(fd, skipbuf, chunk);
+			if (r <= 0)
+				break;
+			left -= r;
+		}
+	}
+
+	printf("> Editing %s (append). Enter text, empty line to finish.\n", name);
 
 	char buf[128];
 	while (1) {
-		printf("> ");
 		int r = read(0, buf, sizeof(buf) - 1);
 		if (r <= 0)
 			break; /* 空行或读取失败：结束编辑 */
