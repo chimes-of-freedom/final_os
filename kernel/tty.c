@@ -333,6 +333,30 @@ PRIVATE void tty_dev_write(TTY* tty)
 				tty->tty_left_cnt--;
 			}
 			else if (ch == '\b' && tty->tty_trans_cnt) {
+				/* 回退时检查上一个已存字符，避免删除上一行末尾的可见字符 */
+				char *base = (char*)tty->tty_req_buf;
+				char last = base[tty->tty_trans_cnt - 1];
+				if (last == '\n') {
+					tty->tty_trans_cnt--;
+					tty->tty_left_cnt++;
+					/* 计算上一行起点，重绘以把光标放回行尾 */
+					int start = tty->tty_trans_cnt - 1;
+					while (start >= 0 && base[start] != '\n')
+						start--;
+					start++; /* 指向上一行的第一个字符（或 0） */
+
+					/* 先退一整行到行首，清理被擦出的空格 */
+					int i;
+					for (i = 0; i < SCR_WIDTH; i++)
+						out_char(tty->console, '\b');
+
+					/* 重绘上一行内容，将光标停在行尾 */
+					for (i = start; i < tty->tty_trans_cnt; i++)
+						out_char(tty->console, base[i]);
+
+					continue;
+				}
+
 				out_char(tty->console, ch);
 				tty->tty_trans_cnt--;
 				tty->tty_left_cnt++;

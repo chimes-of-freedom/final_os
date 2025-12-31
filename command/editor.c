@@ -29,26 +29,37 @@ int main(int argc, char *argv[])
 	memcpy(path + 1, name, copy_len);
 	path[copy_len + 1] = '\0';
 
-	/* 清空旧文件，确保编辑结果覆盖 */
 	struct stat st;
-	if (stat(path, &st) == 0) {
-		if (unlink(path) != 0) {
-			printf("editor: Failed to prepare %s\n", name);
-			return 1;
-		}
-	}
+	int have_old = (stat(path, &st) == 0);
+	int flag_create = have_old ? 0 : O_CREAT;
 
-	int fd = open(path, O_CREAT | O_RDWR);
+	int fd = open(path, flag_create | O_RDWR);
 	if (fd < 0) {
 		printf("editor: Failed to open %s\n", name);
 		return 1;
 	}
 
-	printf("> Editing %s. Enter text, empty line to finish.\n", name);
+	/* 若有旧内容，按照文件大小读取并打印出来 */
+	if (have_old) {
+		printf("--- existing content of %s ---\n", name);
+		char showbuf[128];
+		int left = st.st_size;
+		while (left > 0) {
+			int want = left > (int)(sizeof(showbuf) - 1) ? (int)(sizeof(showbuf) - 1) : left;
+			int r = read(fd, showbuf, want);
+			if (r <= 0)
+				break;
+			showbuf[r] = '\0';
+			printf("%s", showbuf);
+			left -= r;
+		}
+		printf("\n--- append below ---\n");
+	}
+
+	printf("> Editing %s (append). Enter text, empty line to finish.\n", name);
 
 	char buf[128];
 	while (1) {
-		printf("> ");
 		int r = read(0, buf, sizeof(buf) - 1);
 		if (r <= 0)
 			break; /* 空行或读取失败：结束编辑 */
