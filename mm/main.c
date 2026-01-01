@@ -22,7 +22,7 @@
 #include "proto.h"
 
 PUBLIC void do_fork_test();
-PUBLIC void* malloc_free(int mode, int pid, int size, void* m);
+PUBLIC void* do_mallocfree(int mode);
 PRIVATE void init_mm();
 
 /*****************************************************************************
@@ -66,11 +66,10 @@ PUBLIC void task_mm()
 			mm_msg.RETVAL = do_kill();
 			break;
 		case MALLOC:
-			mm_msg.RETVAL = malloc_free(1, src, mm_msg.CNT, 0);
+			mm_msg.RETVAL = do_mallocfree(1);
 			break;
 		case FREE:
-			malloc_free(0, src, mm_msg.CNT, mm_msg.BUF);
-			reply = 0;
+			mm_msg.RETVAL = do_mallocfree(0);
 			break;
 		default:
 			dump_msg("MM::unknown msg", &mm_msg);
@@ -151,8 +150,11 @@ PUBLIC int free_mem(int pid)
 	return 0;
 }
 
-PUBLIC void* malloc_free(int mode, int pid, int size, void* m)
+PUBLIC void* do_mallocfree(int mode)
 {
+	int pid = mm_msg.PID;
+	int size = mm_msg.CNT;
+	void *buf = mm_msg.BUF;
 	static int l[42], r[42];
 	static char m_bitmap[42][PROC_ORIGIN_STACK];
 	int i = 0;
@@ -187,7 +189,7 @@ PUBLIC void* malloc_free(int mode, int pid, int size, void* m)
 	{
 		for(i = 0; i < size; ++i)
 		{
-			m_bitmap[pid][(int)m + i] = 0;
+			m_bitmap[pid][(int)buf + i] = 0;
 		}
 		for(i = 1; i < r[pid]; ++i)
 		{
