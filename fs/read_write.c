@@ -89,7 +89,7 @@ PUBLIC int do_rdwt()
 				FSBUF_SIZE >> SECTOR_SIZE_SHIFT);
 
 		int bytes_rw = 0;
-		int bytes_left = len;
+		int bytes_left = pos_end - pos;
 		int i;
 		for (i = rw_sect_min; i <= rw_sect_max; i += chunk) {
 			/* read/write this amount of bytes every time */
