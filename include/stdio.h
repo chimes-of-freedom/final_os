@@ -151,5 +151,10 @@ PUBLIC int	stat		(const char *path, struct stat *buf);
 /* lib/syslog.c */
 PUBLIC	int	syslog		(const char *fmt, ...);
 
+/* lib/malloc.c */
+PUBLIC	void	*malloc		(const int size);
+
+/* lib/free.c */
+PUBLIC	void	free		(const void *mem);
 
 #endif /* _ORANGES_STDIO_H_ */
