@@ -78,7 +78,7 @@ PUBLIC void* clone_kernel_pde()
 	return (void*)new_pd;
 }
 
-/* Map a linear range identically to same physical addresses (page aligned up). */
+/* 对于指定的页目录表，创建指定线性地址到物理地址的恒等映射（更新/创建对应 PDE 和 PTE） */
 PUBLIC void map_range_identity(u32 cr3_phys, u32 linear_start, u32 bytes, u32 flags)
 {
 	u32 la = linear_start & PAGE_MASK;
@@ -100,8 +100,9 @@ PUBLIC void map_range_identity(u32 cr3_phys, u32 linear_start, u32 bytes, u32 fl
 		 * 但对于用户进程，10~12MB 的映射要另作他用
 		 * 因此不能和内核共享 PDE2 指向的页表
 		 */
-		else if (!is_kernel_pd && pd[pde_idx] >= PAGE_TABLE_BASE && pd[pde_idx] < PAGE_TABLE_AREA_END) {
-			/* assume kernel tables are in this area; clone to keep user isolation */
+		else if (!is_kernel_pd &&
+		         pd[pde_idx] >= PAGE_TABLE_BASE && pd[pde_idx] < PAGE_TABLE_AREA_END &&
+		         pd[pde_idx] < (PAGE_TABLE_BASE + 3 * PAGE_SIZE)) {
 			u32 pt_old = pd[pde_idx] & PAGE_MASK;
 			u32 pt_new = alloc_table_frame();
 			memcpy((void*)pt_new, (void*)pt_old, PAGE_SIZE);

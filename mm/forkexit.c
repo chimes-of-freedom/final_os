@@ -107,10 +107,10 @@ PUBLIC int do_fork()
 	   so we allocate memory just once */
 	int child_base = alloc_mem(child_pid, caller_T_size);
 
-	/* Create child page directory and map its image */
+	/* 创建子进程的页目录表（涵盖内核映射和镜像范围映射）并做必要的克隆 */
 	void* child_cr3 = clone_kernel_pde();
 	map_range_identity((u32)child_cr3, child_base, caller_T_size, PG_USU | PG_RWW);
-	/* Ensure kernel CR3 can see parent/child images for memcpy during fork */
+	/* 保证内核的页目录表映射了父子进程的镜像地址范围 */
 	map_range_identity(PAGE_DIR_BASE, caller_T_base, caller_T_size, PG_RWW);
 	map_range_identity(PAGE_DIR_BASE, child_base, caller_T_size, PG_RWW);
 
