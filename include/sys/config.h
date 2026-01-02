@@ -14,6 +14,9 @@
  * @attention INSTALL_NR_SECTS should be a multiple of NR_DEFAULT_FILE_SECTS:
  *                INSTALL_NR_SECTS = n * NR_DEFAULT_FILE_SECTS (n=1,2,3,...)
  */
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define	INSTALL_START_SECT		0x8000
 #define	INSTALL_NR_SECTS		0x800
 
@@ -41,3 +44,5 @@
 #define SET_LOG_SECT_SMAP_AT_STARTUP
 #define MEMSET_LOG_SECTS
 #define	NR_SECTS_FOR_LOG		NR_DEFAULT_FILE_SECTS
+
+#endif

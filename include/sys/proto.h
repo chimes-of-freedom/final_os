@@ -5,11 +5,12 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-#ifndef __PROTO_H__
-#define __PROTO_H__
+#ifndef PROTO_H
+#define PROTO_H
 
 #include "console.h"
 #include "tty.h"
+#include "type.h"
 
 struct descriptor;
 struct proc;
@@ -122,6 +123,9 @@ PUBLIC void		dump_fd_graph(const char * fmt, ...);
 PUBLIC void		task_mm();
 PUBLIC int		alloc_mem(int pid, int memsize);
 PUBLIC int		free_mem(int pid);
+PUBLIC void		alloc_pages(int err_code, int eip, int cs, int eflags);
+PUBLIC void*		clone_kernel_pde();
+PUBLIC void		map_range_identity(u32 cr3_phys, u32 linear_start, u32 bytes, u32 flags);
 
 /* mm/forkexit.c */
 PUBLIC int		do_fork();

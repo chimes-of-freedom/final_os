@@ -5,8 +5,8 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-#ifndef __PROC_H__
-#define __PROC_H__
+#ifndef PROC_H
+#define PROC_H
 
 #include "protect.h"
 
@@ -37,6 +37,8 @@ struct proc {
 
 	u16 ldt_sel;               /* gdt selector giving ldt base and limit */
 	struct descriptor ldts[LDT_SIZE]; /* local descs for code and data */
+
+	u32 cr3;                   /* page directory physical address */
 
         int ticks;                 /* remained ticks */
         int priority;

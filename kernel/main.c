@@ -113,6 +113,8 @@ PUBLIC int kernel_main()
 		p->q_sending = 0;
 		p->next_sending = 0;
 
+		p->cr3 = PAGE_DIR_BASE; /* all start with kernel page directory */
+
 		for (j = 0; j < NR_FILES; j++)
 			p->filp[j] = 0;
 

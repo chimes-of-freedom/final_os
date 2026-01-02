@@ -20,7 +20,7 @@
 #include "keyboard.h"
 #include "proto.h"
 
-/* #define __TTY_DEBUG__ */
+/* #define TTY_DEBUG */
 
 /* local routines */
 PRIVATE void	set_cursor(unsigned int position);

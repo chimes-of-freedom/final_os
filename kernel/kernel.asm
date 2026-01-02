@@ -385,6 +385,12 @@ sys_call:
 ; ====================================================================================
 restart:
 	mov	esp, [p_proc_ready]
+	mov	eax, [esp + P_CR3]
+	test	eax, eax
+	jnz	.load_cr3
+	mov	eax, PAGE_DIR_BASE
+.load_cr3:
+	mov	cr3, eax
 	lldt	[esp + P_LDT_SEL] 
 	lea	eax, [esp + P_STACKTOP]
 	mov	dword [tss + TSS3_S_SP0], eax

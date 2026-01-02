@@ -6,9 +6,14 @@
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 /* EXTERN is defined as extern except in global.c */
+#ifndef GLOBAL_H
+#define GLOBAL_H
+
 #ifdef	GLOBAL_VARIABLES_HERE
-#undef	EXTERN
-#define	EXTERN
+	#undef	EXTERN
+	#define	EXTERN
+#else
+	#define	EXTERN	extern
 #endif
 
 EXTERN	int	ticks;
@@ -40,6 +45,9 @@ extern	irq_handler	irq_table[];
 extern	TTY		tty_table[];
 extern  CONSOLE		console_table[];
 
+/* Paging */
+extern	u8		pages_map[];
+
 /* MM */
 EXTERN	MESSAGE			mm_msg;
 extern	u8 *			mmbuf;
@@ -64,3 +72,5 @@ extern	char *			logdiskbuf;
 extern	const int		LOGDISKBUF_SIZE;
 
 EXTERN 	int 			log_enable;
+
+#endif

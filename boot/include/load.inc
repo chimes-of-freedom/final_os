@@ -8,6 +8,8 @@ KRNL_ENT_PT_PHY_ADDR	equ	0x1000
 ;; paging
 PAGE_DIR_BASE		equ	0x100000
 PAGE_TBL_BASE		equ	0x101000
+; 覆盖到 0xA00000（含内核、页表自身、VGA、fs/mmbuf/logbuf/logdiskbuf）的页设为 P=1，其余保持未映射
+MAP_END_PHYS	equ	0x00A00000
 
 ;; where loader is loaded
 LOADER_SEG		equ	0x9000
