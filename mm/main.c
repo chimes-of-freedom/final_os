@@ -66,10 +66,10 @@ PUBLIC void task_mm()
 			mm_msg.RETVAL = do_kill();
 			break;
 		case MALLOC:
-			mm_msg.RETVAL = do_mallocfree(1);
+			mm_msg.RETVAL = (int)do_mallocfree(1);
 			break;
 		case FREE:
-			mm_msg.RETVAL = do_mallocfree(0);
+			mm_msg.RETVAL = (int)do_mallocfree(0);
 			break;
 		default:
 			dump_msg("MM::unknown msg", &mm_msg);

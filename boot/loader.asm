@@ -780,45 +780,62 @@ DispMemInfo:
 ;;; ; ---------------------------------------------------------------------------
 
 	
+
+
 ; 启动分页机制 --------------------------------------------------------------
 SetupPaging:
-	; 根据内存大小计算应初始化多少PDE以及多少页表
-	xor	edx, edx
-	mov	eax, [dwMemSize]
-	mov	ebx, 400000h	; 400000h = 4M = 4096 * 1024, 一个页表对应的内存大小
-	div	ebx
-	mov	ecx, eax	; 此时 ecx 为页表的个数，也即 PDE 应该的个数
-	test	edx, edx
-	jz	.no_remainder
-	inc	ecx		; 如果余数不为 0 就需增加一个页表
-.no_remainder:
-	push	ecx		; 暂存页表个数
-
-	; 为简化处理, 所有线性地址对应相等的物理地址. 并且不考虑内存空洞.
-
-	; 首先初始化页目录
+	; 计算需要的页数与 PDE 数
 	mov	ax, SelectorFlatRW
 	mov	es, ax
-	mov	edi, PAGE_DIR_BASE	; 此段首地址为 PAGE_DIR_BASE
-	xor	eax, eax
-	mov	eax, PAGE_TBL_BASE | PG_P  | PG_USU | PG_RWW
-.1:
-	stosd
-	add	eax, 4096		; 为了简化, 所有页表在内存中是连续的.
-	loop	.1
+	mov	eax, MAP_END_PHYS
+	add	eax, 0FFFh			; 向上按页对齐
+	shr	eax, 12				; eax = total_pages
+	mov	ebx, eax			; 保存 total_pages
+	mov	edx, eax
+	and	edx, 3FFh			; 余数
+	shr	eax, 10				; eax = total_pages / 1024
+	mov	esi, eax			; esi = pde_count 基数
+	test	edx, edx
+	jz	.no_extra_pde
+	inc	esi
+.no_extra_pde:
 
-	; 再初始化所有页表
-	pop	eax			; 页表个数
-	mov	ebx, 1024		; 每个页表 1024 个 PTE
-	mul	ebx
-	mov	ecx, eax		; PTE个数 = 页表个数 * 1024
-	mov	edi, PAGE_TBL_BASE	; 此段首地址为 PAGE_TBL_BASE
+	; 清零页目录（1024 项）
+	mov	edi, PAGE_DIR_BASE
 	xor	eax, eax
-	mov	eax, PG_P  | PG_USU | PG_RWW
-.2:
+	mov	ecx, 1024
+	rep	stosd
+
+	; 清零会用到的页表区域（pde_count * 1024 项）
+	mov	edi, PAGE_TBL_BASE
+	mov	ecx, esi
+	imul	ecx, 1024
+	xor	eax, eax
+	rep	stosd
+
+	; 填充需要的 PDE，指向连续的页表
+	mov	edi, PAGE_DIR_BASE
+	mov	eax, PAGE_TBL_BASE | PG_P | PG_USU | PG_RWW
+	mov	ecx, esi
+.fill_pde:
+	cmp	ecx, 0
+	jz	.done_pde
 	stosd
-	add	eax, 4096		; 每一页指向 4K 的空间
-	loop	.2
+	add	eax, 4096
+	loop	.fill_pde
+.done_pde:
+
+	; 填充需要的 PTE：覆盖到 MAP_END_PHYS 之内的页为 Present
+	mov	edi, PAGE_TBL_BASE
+	mov	eax, PG_P | PG_USU | PG_RWW
+	mov	ecx, ebx			; total_pages
+	test	ecx, ecx
+	jz	.done_pte
+.fill_pte:
+	stosd
+	add	eax, 4096			; 指向下一页物理地址
+	loop	.fill_pte
+.done_pte:
 
 	mov	eax, PAGE_DIR_BASE
 	mov	cr3, eax

@@ -27,6 +27,15 @@
 #define BRIGHT  0x08    /* 0000 1000 */
 #define	MAKE_COLOR(x,y)	((x<<4) | y) /* MAKE_COLOR(Background,Foreground) */
 
+/* Paging */
+#define PAGE_SIZE       0x1000
+#define PAGE_MASK       0xFFFFF000
+#define PAGE_DIR_BASE   0x00100000
+#define PAGE_TABLE_BASE 0x00101000
+#define PG_P            0x001
+#define PG_RWW          0x002
+#define PG_USU          0x004
+
 /* GDT 和 IDT 中描述符的个数 */
 #define	GDT_SIZE	128
 #define	IDT_SIZE	256

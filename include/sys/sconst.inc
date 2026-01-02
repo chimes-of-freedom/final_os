@@ -27,6 +27,7 @@ SSREG		equ	ESPREG		+ 4
 P_STACKTOP	equ	SSREG		+ 4
 P_LDT_SEL	equ	P_STACKTOP
 P_LDT		equ	P_LDT_SEL	+ 4
+P_CR3		equ	P_LDT		+ 16	; two descriptors (16 bytes)
 
 TSS3_S_SP0	equ	4
 
@@ -41,4 +42,7 @@ EOI		equ	0x20
 SELECTOR_FLAT_C		equ		0x08		; LOADER 里面已经确定了的.
 SELECTOR_TSS		equ		0x20		; TSS. 从外层跳到内存时 SS 和 ESP 的值从里面获得.
 SELECTOR_KERNEL_CS	equ		SELECTOR_FLAT_C
+
+; Paging constants
+PAGE_DIR_BASE	equ	0x00100000
 

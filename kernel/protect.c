@@ -242,6 +242,10 @@ PUBLIC void init_desc(struct descriptor * p_desc, u32 base, u32 limit, u16 attri
  *======================================================================*/
 PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
 {
+	if (vec_no == 14) {
+		alloc_pages(err_code, eip, cs, eflags);
+		return;
+	}
 	int i;
 	int text_color = 0x74; /* 灰底红字 */
 	char err_description[][64] = {	"#DE Divide Error",
