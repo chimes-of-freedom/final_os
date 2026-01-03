@@ -33,41 +33,97 @@ int main(int argc, char *argv[])
 	int have_old = (stat(path, &st) == 0);
 	int flag_create = have_old ? 0 : O_CREAT;
 
-	int fd = open(path, flag_create | O_RDWR);
-	if (fd < 0) {
-		printf("editor: Failed to open %s\n", name);
+	int fd;
+	if (have_old) {
+		fd = open(path, flag_create | O_RDWR);
+		if (fd < 0) {
+			printf("editor: Failed to open %s\n", name);
+			return 1;
+		}
+	}
+
+	printf("--- Editing %s", name);
+	if (!have_old) {
+		printf(" (new)");
+	}
+	printf(". You can trim tail bytes then append. ---\n");
+
+	int old_size = have_old ? st.st_size : 0;
+	int buf_cap = old_size + 4096; /* allow extra input */
+	char *buf = (char*)malloc(buf_cap + 1);
+	if (!buf) {
+		printf("editor: No memory\n");
+		if (have_old) {
+			close(fd);
+		}
 		return 1;
 	}
 
-	/* 若有旧内容，按照文件大小读取并打印出来 */
+	int old_read = 0;
 	if (have_old) {
-		printf("--- existing content of %s ---\n", name);
-		char showbuf[128];
-		int left = st.st_size;
-		while (left > 0) {
-			int want = left > (int)(sizeof(showbuf) - 1) ? (int)(sizeof(showbuf) - 1) : left;
-			int r = read(fd, showbuf, want);
-			if (r <= 0)
+		while (old_read < old_size) {
+			int want = old_size - old_read;
+			if (want > 512)
+				want = 512;
+			int got = read(fd, buf + old_read, want);
+			if (got <= 0)
 				break;
-			showbuf[r] = '\0';
-			printf("%s", showbuf);
-			left -= r;
+			old_read += got;
 		}
-		printf("\n--- append below ---\n");
+		old_size = old_read;
+		buf[old_size] = '\0';
+		printf("%s", buf);
 	}
 
-	printf("> Editing %s (append). Enter text, empty line to finish.\n", name);
-
-	char buf[128];
-	while (1) {
-		int r = read(0, buf, sizeof(buf) - 1);
-		if (r <= 0)
-			break; /* 空行或读取失败：结束编辑 */
-		buf[r] = '\0';
-
-		write(fd, buf, r);
+	int del_bytes = 0;
+	if (have_old) {
+		printf("\n--- Bytes to delete from end (0 to keep): ");
+		char del_input[32];
+		int dlen = read(0, del_input, sizeof(del_input) - 1);
+		if (dlen > 0) {
+			del_input[dlen] = '\0';
+			del_bytes = atoi(del_input);
+			if (del_bytes < 0)
+				del_bytes = 0;
+			if (del_bytes > old_size)
+				del_bytes = old_size;
+		}
 	}
 
+	int keep = old_size - del_bytes;
+	if (keep < 0) {
+		keep = 0;
+	}
+
+	printf("--- Append text, empty line to finish. ---\n");
+	int append_cap = buf_cap - keep;
+	if (append_cap < 0) {
+		append_cap = 0;
+	}
+	int append_len = read(0, buf + keep, append_cap);
+	if (append_len < 0) {
+		append_len = 0;
+	}
+
+	int final_len = keep + append_len;
+	
+	if (have_old) {
+		close(fd);
+		unlink(path);
+	}
+
+	fd = open(path, O_CREAT | O_RDWR);
+	if (fd < 0) {
+		printf("fd = %d\n", fd);
+		printf("editor: Failed to reopen %s\n", name);
+		free(buf, buf_cap + 1);
+		return 1;
+	}
+
+	if (final_len > 0)
+		write(fd, buf, final_len);
+
+	free(buf, buf_cap + 1);
 	close(fd);
 	return 0;
 }
