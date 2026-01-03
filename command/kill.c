@@ -53,20 +53,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	MESSAGE msg;
-
-	msg.type	= KILL;
-	msg.KILL_PID	= pid;
-	msg.KILL_SIG	= forced ? SIG_KILL : SIG_TERM;
-	msg.KILL_FORCE	= forced;
-
-	if (send_recv(BOTH, TASK_MM, &msg) || msg.RETVAL != 0) {
-		printf("kill: Failed to kill pid %d\n", pid);
-		return 1;
-	}
-	
-
-	return 0;
+	return lib_kill(pid, forced);
 
 usage:
 	printf("kill: Usage: kill [-9] pid\n");

@@ -157,4 +157,7 @@ PUBLIC	void	*malloc		(const int size);
 /* lib/free.c */
 PUBLIC	void	free		(void *mem, unsigned int size);
 
+/* lib/lib_kill.c*/
+PUBLIC	int	lib_kill	(int pid, int forced);
+
 #endif /* _ORANGES_STDIO_H_ */
