@@ -12,7 +12,7 @@ CFLAGS		= -I ../include/ -I ../include/sys -c -fno-builtin -fno-stack-protector 
 LDFLAGS		= -Ttext 0x1000
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= echo pwd ps kill ls touch rm editor logman cat
+BIN		= echo pwd ps kill ls touch rm editor logman cat poc_fs
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install
@@ -99,4 +99,12 @@ cat.o: cat.c ../include/stdio.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 cat : cat.o start.o $(LIB)
+	$(LD) $(LDFLAGS) -o $@ $?
+
+# ========== Vulnerability PoC Programs ==========
+
+poc_fs.o: poc_fs.c ../include/stdio.h ../include/string.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+poc_fs : poc_fs.o start.o $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $?
