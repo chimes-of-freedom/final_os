@@ -12,6 +12,6 @@ PUBLIC void *malloc(const int size) {
 	msg.CNT = size;
 	send_recv(BOTH, TASK_MM, &msg);
 	
-	assert(msg.RETVAL == SYSCALL_RET);
+	assert(msg.type == SYSCALL_RET);
 	return msg.BUF;
 }
