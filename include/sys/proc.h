@@ -44,7 +44,7 @@ struct proc {
         int priority;
 
 	/* u32 pid;			/\* process id passed in from MM *\/ */
-	char name[PROC_NAME_LEN];	/* name of the process */
+	char name[PROC_NAME_LEN + 1];	/* name of the process */
 
 	int  p_flags;              /**
 				    * process flags.
