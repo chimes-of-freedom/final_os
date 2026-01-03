@@ -156,14 +156,16 @@ PUBLIC void* do_mallocfree(int mode)
 	int size = mm_msg.CNT;
 	void *buf = mm_msg.BUF;
 
-	static unsigned char bitmap[42][102];
+	static u8 bitmap[42][102];
 	static int initialized = 0;
-	const unsigned int base_addr = 0x1000;
-	const unsigned int end_addr = 0x4000;
-	const unsigned int block_size = 0x10;
-	const unsigned int total_blocks = (end_addr - base_addr) / block_size;
 
-	unsigned int start_bit = 0, j = 0;
+#define MALLOC_BASE_ADDR 	0x1000
+#define MALLOC_END_ADDR  	0x4000
+#define MALLOC_BLOCK_SIZE 	0x10
+
+	const u32 total_blocks = (MALLOC_END_ADDR - MALLOC_BASE_ADDR) / MALLOC_BLOCK_SIZE;
+
+	u32 start_bit = 0, j = 0;
 	if (!initialized) {
 		memset(bitmap, 0, sizeof(bitmap));
 		initialized = 1;
@@ -177,14 +179,14 @@ PUBLIC void* do_mallocfree(int mode)
 		if (size == 0) {
 			return (void*)0;
 		}
-		unsigned int blocks_needed = (size + block_size - 1) / block_size;
+		u32 blocks_needed = (size + MALLOC_BLOCK_SIZE - 1) / MALLOC_BLOCK_SIZE;
 
 		for (start_bit = 0; start_bit <= total_blocks - blocks_needed; ++start_bit) {
 			int is_free = 1;
 			for (j = 0; j < blocks_needed; ++j) {
-				unsigned int bit_index = start_bit + j;
-				unsigned int byte_index = bit_index / 8;
-				unsigned int bit_pos = bit_index % 8;
+				u32 bit_index = start_bit + j;
+				u32 byte_index = bit_index / 8;
+				u32 bit_pos = bit_index % 8;
 				if (bitmap[pid][byte_index] & (1 << bit_pos)) {
 					is_free = 0;
 					break;
@@ -192,12 +194,12 @@ PUBLIC void* do_mallocfree(int mode)
 			}
 			if (is_free) {
 				for (j = 0; j < blocks_needed; ++j) {
-					unsigned int bit_index = start_bit + j;
-					unsigned int byte_index = bit_index / 8;
-					unsigned int bit_pos = bit_index % 8;
+					u32 bit_index = start_bit + j;
+					u32 byte_index = bit_index / 8;
+					u32 bit_pos = bit_index % 8;
 					bitmap[pid][byte_index] |= (1 << bit_pos);
 				}
-				return (void*)(base_addr + start_bit * block_size);
+				return (void*)(MALLOC_BASE_ADDR + start_bit * MALLOC_BLOCK_SIZE);
 			}
 		}
 		return (void*)0;
@@ -205,19 +207,19 @@ PUBLIC void* do_mallocfree(int mode)
 		if (buf == (void*)0 || size == 0) {
 			return (void*)0;
 		}
-		unsigned int ptr = (unsigned int)buf;
-		if (ptr < base_addr || ptr >= end_addr || (ptr - base_addr) % block_size != 0) {
+		u32 ptr = (u32)buf;
+		if (ptr < MALLOC_BASE_ADDR || ptr >= MALLOC_END_ADDR || (ptr - MALLOC_BASE_ADDR) % MALLOC_BLOCK_SIZE != 0) {
 			return (void*)0;  // Invalid pointer
 		}
-		unsigned int start_bit = (ptr - base_addr) / block_size;
-		unsigned int blocks_to_free = (size + block_size - 1) / block_size;
+		u32 start_bit = (ptr - MALLOC_BASE_ADDR) / MALLOC_BLOCK_SIZE;
+		u32 blocks_to_free = (size + MALLOC_BLOCK_SIZE - 1) / MALLOC_BLOCK_SIZE;
 		if (start_bit + blocks_to_free > total_blocks) {
 			return (void*)0;  // Out of bounds
 		}
 		for (j = 0; j < blocks_to_free; ++j) {
-			unsigned int bit_index = start_bit + j;
-			unsigned int byte_index = bit_index / 8;
-			unsigned int bit_pos = bit_index % 8;
+			u32 bit_index = start_bit + j;
+			u32 byte_index = bit_index / 8;
+			u32 bit_pos = bit_index % 8;
 			bitmap[pid][byte_index] &= ~(1 << bit_pos);
 		}
 		return (void*)0;
