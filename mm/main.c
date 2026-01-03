@@ -66,7 +66,7 @@ PUBLIC void task_mm()
 			mm_msg.RETVAL = do_kill();
 			break;
 		case MALLOC:
-			mm_msg.RETVAL = (int)do_mallocfree(1);
+			mm_msg.BUF = do_mallocfree(1);
 			break;
 		case FREE:
 			mm_msg.RETVAL = (int)do_mallocfree(0);
@@ -152,52 +152,75 @@ PUBLIC int free_mem(int pid)
 
 PUBLIC void* do_mallocfree(int mode)
 {
-	int pid = mm_msg.PID;
+	int pid = mm_msg.source;
 	int size = mm_msg.CNT;
 	void *buf = mm_msg.BUF;
-	static int l[42], r[42];
-	static char m_bitmap[42][PROC_ORIGIN_STACK];
-	int i = 0;
-	void* ans = 0;
-	for(i = 0; i < 42; ++i)
-	{
-		l[i] = r[i] = 1;
+
+	static unsigned char bitmap[42][102];
+	static int initialized = 0;
+	const unsigned int base_addr = 0x1000;
+	const unsigned int end_addr = 0x4000;
+	const unsigned int block_size = 0x10;
+	const unsigned int total_blocks = (end_addr - base_addr) / block_size;
+
+	unsigned int start_bit = 0, j = 0;
+	if (!initialized) {
+		memset(bitmap, 0, sizeof(bitmap));
+		initialized = 1;
 	}
-	if( mode )
-	{
-		if(l[pid] < size && size - l[pid] >= 1)
-		{
-			ans = (void*)(size - l[pid]);
-			l[pid] -= size;
-		}
-		else if (r[pid] + size < PROC_ORIGIN_STACK)
-		{
-			ans = (void*)(r[pid]);
-			r[pid] += size;
-		}
-		else
-		{
+
+	if (pid < 0 || pid >= 40) {
+		return (void*)0;
+	}
+
+	if (mode == 1) {  // malloc
+		if (size == 0) {
 			return (void*)0;
 		}
-		for(i = 0; i < size; ++i)
-		{
-			m_bitmap[pid][(int)ans + i] = 1;
+		unsigned int blocks_needed = (size + block_size - 1) / block_size;
+
+		for (start_bit = 0; start_bit <= total_blocks - blocks_needed; ++start_bit) {
+			int is_free = 1;
+			for (j = 0; j < blocks_needed; ++j) {
+				unsigned int bit_index = start_bit + j;
+				unsigned int byte_index = bit_index / 8;
+				unsigned int bit_pos = bit_index % 8;
+				if (bitmap[pid][byte_index] & (1 << bit_pos)) {
+					is_free = 0;
+					break;
+				}
+			}
+			if (is_free) {
+				for (j = 0; j < blocks_needed; ++j) {
+					unsigned int bit_index = start_bit + j;
+					unsigned int byte_index = bit_index / 8;
+					unsigned int bit_pos = bit_index % 8;
+					bitmap[pid][byte_index] |= (1 << bit_pos);
+				}
+				return (void*)(base_addr + start_bit * block_size);
+			}
 		}
-		return ans;
-	}
-	else
-	{
-		for(i = 0; i < size; ++i)
-		{
-			m_bitmap[pid][(int)buf + i] = 0;
+		return (void*)0;
+	} else if (mode == 0) {  // free
+		if (buf == (void*)0 || size == 0) {
+			return (void*)0;
 		}
-		for(i = 1; i < r[pid]; ++i)
-		{
-			if(m_bitmap[pid][i] == 0)
-				l[pid] = i;
-			else
-				break;
+		unsigned int ptr = (unsigned int)buf;
+		if (ptr < base_addr || ptr >= end_addr || (ptr - base_addr) % block_size != 0) {
+			return (void*)0;  // Invalid pointer
+		}
+		unsigned int start_bit = (ptr - base_addr) / block_size;
+		unsigned int blocks_to_free = (size + block_size - 1) / block_size;
+		if (start_bit + blocks_to_free > total_blocks) {
+			return (void*)0;  // Out of bounds
+		}
+		for (j = 0; j < blocks_to_free; ++j) {
+			unsigned int bit_index = start_bit + j;
+			unsigned int byte_index = bit_index / 8;
+			unsigned int bit_pos = bit_index % 8;
+			bitmap[pid][byte_index] &= ~(1 << bit_pos);
 		}
 		return (void*)0;
 	}
+	return (void*)0;  // Invalid mode
 }

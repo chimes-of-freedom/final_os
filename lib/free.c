@@ -1,7 +1,7 @@
 #include "stdio.h"
 #include "proto.h"
 
-PUBLIC void free(const void *mem) {
+PUBLIC void free(void *mem, unsigned int size) {
 	if (!mem) {
 		return;
 	}
@@ -9,7 +9,8 @@ PUBLIC void free(const void *mem) {
 	MESSAGE msg;
 	msg.type = FREE;
 	msg.BUF = mem;
+	msg.CNT = size;
 	send_recv(BOTH, TASK_MM, &msg);
 
-	assert(msg.RETVAL == SYSCALL_RET);
+	assert(msg.type == SYSCALL_RET);
 }

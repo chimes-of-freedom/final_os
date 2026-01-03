@@ -155,6 +155,6 @@ PUBLIC	int	syslog		(const char *fmt, ...);
 PUBLIC	void	*malloc		(const int size);
 
 /* lib/free.c */
-PUBLIC	void	free		(const void *mem);
+PUBLIC	void	free		(void *mem, unsigned int size);
 
 #endif /* _ORANGES_STDIO_H_ */
