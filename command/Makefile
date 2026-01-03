@@ -12,7 +12,7 @@ CFLAGS		= -I ../include/ -I ../include/sys -c -fno-builtin -fno-stack-protector 
 LDFLAGS		= -Ttext 0x1000
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= echo pwd ps kill ls touch rm editor logman cat poc_fs
+BIN		= echo pwd ps kill ls touch rm editor logman cat poc_fs poc_elf
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install
@@ -107,4 +107,10 @@ poc_fs.o: poc_fs.c ../include/stdio.h ../include/string.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 poc_fs : poc_fs.o start.o $(LIB)
+	$(LD) $(LDFLAGS) -o $@ $?
+
+poc_elf.o: poc_elf.c ../include/stdio.h ../include/string.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+poc_elf : poc_elf.o start.o $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $?
