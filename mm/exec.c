@@ -51,20 +51,35 @@ PUBLIC int do_exec()
 		return -1;
 	}
 
+	/* refuse obviously invalid binaries (e.g., touched empty files) */
+	if (s.st_size < sizeof(Elf32_Ehdr))
+		return -1;
+
 	/* read the file */
 	int fd = open(pathname, O_RDWR);
 	if (fd == -1)
 		return -1;
 	assert(s.st_size < MMBUF_SIZE);
-	read(fd, mmbuf, s.st_size);
+	phys_set(mmbuf, 0, MMBUF_SIZE);
+	if (read(fd, mmbuf, s.st_size) != s.st_size) {
+		close(fd);
+		return -1;
+	}
 	close(fd);
 
 	/* overwrite the current proc image with the new one */
 	Elf32_Ehdr* elf_hdr = (Elf32_Ehdr*)(mmbuf);
+	if (memcmp(elf_hdr->e_ident, ELFMAG, SELFMAG) != 0)
+		return -1;
+	if (elf_hdr->e_phoff + elf_hdr->e_phnum * elf_hdr->e_phentsize >
+	    s.st_size)
+		return -1;
 	int i;
 	for (i = 0; i < elf_hdr->e_phnum; i++) {
 		Elf32_Phdr* prog_hdr = (Elf32_Phdr*)(mmbuf + elf_hdr->e_phoff +
 			 			(i * elf_hdr->e_phentsize));
+		if (prog_hdr->p_offset + prog_hdr->p_filesz > s.st_size)
+			return -1;
 		if (prog_hdr->p_type == PT_LOAD) {
 			assert(prog_hdr->p_vaddr + prog_hdr->p_memsz <
 				PROC_IMAGE_SIZE_DEFAULT);

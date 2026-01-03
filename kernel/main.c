@@ -306,11 +306,12 @@ void shabby_shell(const char * tty_name)
 					if (gpid != 0) {
 						exit(0); /* 让父进程只需回收这一层 */
 					}
-					/* 真正后台命令 */
-					execv(argv[0], argv);
 				}
-				/* 前台直接执行 */
-				execv(argv[0], argv);
+				/* 前/后台执行命令位置 */
+				if (execv(argv[0], argv) != 0) {
+					printf("shell: error: %s is not an executable\n", argv[0]);
+					exit(-1);
+				}
 			}
 		}
 	}
