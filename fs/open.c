@@ -306,6 +306,8 @@ PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc)
 			}
 
 			for (; k < 8; k++) { /* repeat till enough bits are set */
+				/* TODO: 此断言在连续创建多个新文件时可能失败，
+				 * 疑似 smap 分配逻辑或文件删除时位图释放的 bug */
 				assert(((fsbuf[j] >> k) & 1) == 0);
 				fsbuf[j] |= (1 << k);
 				if (--nr_sects_to_alloc == 0)
