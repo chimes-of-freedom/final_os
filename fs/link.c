@@ -34,6 +34,11 @@
  *****************************************************************************/
 PUBLIC int do_unlink()
 {
+	static const char* exec_list[] = {"ls", "ps", 
+		"logman", "cat", "echo", "pwd", 
+		"editor", "kill", "poc_elf", "poc_fs",
+		"rm", "touch"};
+
 	char pathname[MAX_PATH];
 
 	/* get parameters from the message */
@@ -44,6 +49,21 @@ PUBLIC int do_unlink()
 		  (void*)va2la(src, fs_msg.PATHNAME),
 		  name_len);
 	pathname[name_len] = 0;
+
+	int i;
+	if((src > INIT || src == TASK_FS) 
+		&& src != 10 
+		&& src != 11)	// not INIT or other tasks(except fs) or shell
+		for(i = 0; i < 12; ++i) {
+			if((!strcmp(exec_list[i], pathname)) 
+				|| (!strcmp(exec_list[i], pathname+1))) { // e.g. : "/pwd or pwd"
+				printl("unlink: Not allowed to unlink executable file by pid {%d}\n", src);
+				return -1;
+			}
+		}
+	else{ // for debug
+		// printl("do_open: pid {%d}, skip check.\n", src);
+	}
 
 	if (strcmp(pathname , "/") == 0) {
 		printl("{FS} FS:do_unlink():: cannot unlink the root\n");
@@ -117,7 +137,6 @@ PUBLIC int do_unlink()
 
 	RD_SECT(pin->i_dev, s);
 
-	int i;
 	/* clear the first byte */
 	for (i = bit_idx % 8; (i < 8) && bits_left; i++,bits_left--) {
 		assert((fsbuf[byte_idx % SECTOR_SIZE] >> i & 1) == 1);
