@@ -60,6 +60,13 @@ poc_fs 3
 - `fs/link.c` - `do_unlink()` 无权限检查
 - `fs/read_write.c` - `do_rdwt()` 无权限检查
 
+### protection 分支修复逻辑
+
+- `do_open()` 增加系统可执行文件访问封锁：非 INIT/FS/特定允许 PID（shell 等，排除 10、11）无法打开核心命令 `ls/ps/logman/cat/echo/pwd/editor/kill/poc_elf/poc_fs/rm/touch`，无论读或写，直接返回失败。[fs/open.c](../fs/open.c)
+- 影响：
+    - PoC #1 针对这些可执行文件的读/写/删攻击将失败（`open` 返回 -1）。
+    - 文件系统仍无通用权限模型：对未在封锁清单内的文件，任意进程仍可读写/删除，风险部分缓解但未根除。
+
 ---
 
 ## PoC #2: ELF 加载无完整性校验 (`poc_elf`)
@@ -127,6 +134,14 @@ eip = elf_hdr->e_entry;  // 不检查 magic，直接使用
 - `fs/open.c` - 不检查可执行文件的写权限
 - `fs/read_write.c` - 允许任意进程写入任意文件
 
+### protection 分支修复逻辑
+
+- `do_exec()` 在加载前增加完整性校验：
+    - 拒绝小于 ELF 头的文件并清零缓冲区后再读入，避免残留数据伪造校验通过。
+    - 校验 ELF 魔数、程序头表边界，以及每个段的 `p_offset + p_filesz` 不得越过文件末尾；不合法即返回失败（避免篡改的入口被执行）。
+    - 代码位置：[mm/exec.c](../mm/exec.c)
+- 预期 PoC 影响：`poc_elf` 模式 1/2 在 protection 分支应因校验失败被拒绝执行，不再跳转至篡改地址。
+
 ---
 
 ## PoC #3: 栈返回地址完整性缺失 (`poc_stack`)
@@ -175,3 +190,10 @@ ret_addr_ptr = ebp_ptr + 1;
 ### 相关代码位置
 
 - `command/poc_stack.c` - 用户态直接篡改返回地址，无任何检测
+
+### protection 分支修复逻辑
+
+- 每次 `send_recv` 返回给用户态前都会触发栈完整性检查：如果返回地址或栈指针越界，直接 panic 阻断控制流劫持。[kernel/proc.c](../kernel/proc.c)
+- `do_stack_check()` 遍历用户态 EBP 链，校验每层返回地址是否落在进程代码段范围，并检查 EBP/ESP 越界；失败则记录 `bad_ret_addr`/`bad_ebp` 后终止。[kernel/proc.c](../kernel/proc.c)
+- 新增 `stack_check_result` 结构用于报告检查结果。[include/sys/proc.h](../include/sys/proc.h)
+- 预期 PoC 影响：`poc_stack` 在 protection 分支应触发内核 panic（检测到非法返回地址），无法安静返回用户态。
