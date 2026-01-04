@@ -40,6 +40,11 @@ PRIVATE void new_dir_entry(struct inode * dir_inode, int inode_nr, char * filena
  *****************************************************************************/
 PUBLIC int do_open()
 {
+	static const char* exec_list[] = {"ls", "ps", 
+		"logman", "cat", "echo", "pwd", 
+		"editor", "kill", "poc_elf", "poc_fs",
+		"rm", "touch"};
+	
 	int fd = -1;		/* return value */
 
 	char pathname[MAX_PATH];
@@ -54,8 +59,22 @@ PUBLIC int do_open()
 		  name_len);
 	pathname[name_len] = 0;
 
-	/* find a free slot in PROCESS::filp[] */
 	int i;
+	if((src > INIT || src == TASK_FS) 
+		&& src != 10 
+		&& src != 11)	// not INIT or other tasks(except fs) or shell
+		for(i = 0; i < 12; ++i) {
+			if((!strcmp(exec_list[i], pathname)) 
+				|| (!strcmp(exec_list[i], pathname+1))) { // e.g. : "/pwd or pwd"
+				printl("do_open: Not allowed to open executable file by pid {%d}\n", src);
+				return -1;
+			}
+		}
+	else{ // for debug
+		// printl("do_open: pid {%d}, skip check.\n", src);
+	}
+
+	/* find a free slot in PROCESS::filp[] */
 	for (i = 0; i < NR_FILES; i++) {
 		if (pcaller->filp[i] == 0) {
 			fd = i;
@@ -85,7 +104,7 @@ PUBLIC int do_open()
 		}
 	}
 	else {
-		assert(flags & O_RDWR);
+		// assert(flags & (O_RDWR | O_READ));
 
 		char filename[MAX_PATH];
 		struct inode * dir_inode;
@@ -291,29 +310,29 @@ PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc)
 	int free_sect_nr = 0;
 
 	for (i = 0; i < sb->nr_smap_sects; i++) { /* smap_blk0_nr + i :
-						     current sect nr. */
+					     current sect nr. */
 		RD_SECT(dev, smap_blk0_nr + i);
+
+		int dirty = 0; /* track whether current sector was updated */
 
 		/* byte offset in current sect */
 		for (j = 0; j < SECTOR_SIZE && nr_sects_to_alloc > 0; j++) {
-			k = 0;
-			if (!free_sect_nr) {
-				/* loop until a free bit is found */
-				if (fsbuf[j] == 0xFF) continue;
-				for (; ((fsbuf[j] >> k) & 1) != 0; k++) {}
-				free_sect_nr = (i * SECTOR_SIZE + j) * 8 +
-					k - 1 + sb->n_1st_sect;
-			}
+			for (k = 0; k < 8 && nr_sects_to_alloc > 0; k++) {
+				if ((fsbuf[j] >> k) & 1)
+					continue; /* skip bits that are already in use */
 
-			for (; k < 8; k++) { /* repeat till enough bits are set */
-				assert(((fsbuf[j] >> k) & 1) == 0);
+				if (!free_sect_nr)
+					free_sect_nr = (i * SECTOR_SIZE + j) * 8 +
+						k + sb->n_1st_sect;
+
 				fsbuf[j] |= (1 << k);
-				if (--nr_sects_to_alloc == 0)
-					break;
+				dirty = 1;
+
+				nr_sects_to_alloc--;
 			}
 		}
 
-		if (free_sect_nr) /* free bit found, write the bits to smap */
+		if (dirty) /* free bit found, write the bits to smap */
 			WR_SECT(dev, smap_blk0_nr + i);
 
 		if (nr_sects_to_alloc == 0)
