@@ -321,9 +321,11 @@ PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc)
 				if ((fsbuf[j] >> k) & 1)
 					continue; /* skip bits that are already in use */
 
-				if (!free_sect_nr)
-					free_sect_nr = (i * SECTOR_SIZE + j) * 8 +
-						k + sb->n_1st_sect;
+				if (!free_sect_nr) {
+					int bit_idx = (i * SECTOR_SIZE + j) * 8 + k;
+					/* bit 0 is reserved; map bit N -> sector (n_1st_sect + N - 1) */
+					free_sect_nr = bit_idx + sb->n_1st_sect - 1;
+				}
 
 				fsbuf[j] |= (1 << k);
 				dirty = 1;
