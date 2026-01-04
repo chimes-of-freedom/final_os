@@ -92,6 +92,16 @@ struct proc_info {
 	char name[16];
 };
 
+/* 栈检查结果结构体 */
+struct stack_check_result {
+	int pid;           /* 被检查的进程 */
+	int valid;         /* 1=合法, 0=非法 */
+	int frames_checked;/* 检查了多少层栈帧 */
+	u32 bad_ret_addr;  /* 如果非法，记录第一个非法返回地址 */
+	u32 bad_ebp;       /* 如果非法，记录对应的 ebp */
+	int error_code;    /* 错误类型: 0=OK, 1=返回地址越界, 2=ebp越界, 3=进程不存在 */
+};
+
 #define proc2pid(x) (x - proc_table)
 
 /* Number of tasks & processes */

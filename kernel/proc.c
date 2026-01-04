@@ -104,6 +104,21 @@ PUBLIC int sys_sendrec(int function, int src_dest, MESSAGE* m, struct proc* p)
 		      "%d (SEND:%d, RECEIVE:%d).", function, SEND, RECEIVE);
 	}
 
+	/* 动态度量：检查用户进程的栈返回地址合法性 */
+	if (caller >= NR_TASKS + NR_NATIVE_PROCS) {
+		struct stack_check_result result;
+		do_stack_check(caller, &result);
+		if (!result.valid) {
+			// while (1) {
+			// 	disp_color_str("[SECURITY] Stack violation", MAKE_COLOR(GREEN, RED));
+			// }
+			panic("[SECURITY] Stack violation in proc %d (%s): "
+			      "err=%d, ebp=0x%x, ret=0x%x",
+			      caller, p->name, result.error_code,
+			      result.bad_ebp, result.bad_ret_addr);
+		}
+	}
+
 	return 0;
 }
 
@@ -588,3 +603,128 @@ PUBLIC void dump_msg(const char * title, MESSAGE* m)
 		);
 }
 
+
+/*****************************************************************************
+ *                                do_stack_check
+ *****************************************************************************/
+/**
+ * <Ring 0~1> 检查指定进程的栈返回地址是否合法。
+ * 
+ * 遍历用户态 EBP 链，检查每个栈帧的返回地址是否落在进程的代码段范围内。
+ * 
+ * @param pid     要检查的进程 ID
+ * @param result  检查结果输出
+ * 
+ *****************************************************************************/
+PUBLIC void do_stack_check(int pid, struct stack_check_result* result)
+{
+	int i;
+	u32 user_ebp;
+	u32 prev_ebp;
+	u32 linear_ebp;
+	u32 saved_ebp;
+	u32 ret_addr;
+
+	/* 初始化结果 */
+	result->pid = pid;
+	result->valid = 1;
+	result->frames_checked = 0;
+	result->bad_ret_addr = 0;
+	result->bad_ebp = 0;
+	result->error_code = 0;
+
+	/* 检查进程是否存在 */
+	if (pid < 0 || pid >= NR_TASKS + NR_PROCS) {
+		result->valid = 0;
+		result->error_code = 3; /* 进程不存在 */
+		return;
+	}
+
+	struct proc* p = &proc_table[pid];
+	if (p->p_flags & FREE_SLOT) {
+		result->valid = 0;
+		result->error_code = 3; /* 进程不存在 */
+		return;
+	}
+
+	/* 获取代码段的界限 */
+	struct descriptor* code_desc = &p->ldts[INDEX_LDT_C];
+	u32 code_limit = reassembly((code_desc->limit_high_attr2 & 0xF), 16,
+	                            0, 0,
+	                            code_desc->limit_low);
+	u32 code_size = (code_limit + 1) *
+	                ((code_desc->limit_high_attr2 & (DA_LIMIT_4K >> 8)) ? 4096 : 1);
+
+	/* 检查保存的用户态 EIP（系统调用/中断返回地址）是否在代码段范围内 */
+	u32 user_eip = p->regs.eip;
+	if (user_eip >= code_size) {
+		result->valid = 0;
+		result->bad_ret_addr = user_eip;
+		result->error_code = 1; /* 返回地址越界 */
+		return;
+	}
+
+	/* 获取数据段的基址和界限 */
+	struct descriptor* data_desc = &p->ldts[INDEX_LDT_RW];
+	u32 data_base = reassembly(data_desc->base_high, 24,
+	                           data_desc->base_mid, 16,
+	                           data_desc->base_low);
+	u32 data_limit = reassembly((data_desc->limit_high_attr2 & 0xF), 16,
+	                            0, 0,
+	                            data_desc->limit_low);
+	u32 data_size = (data_limit + 1) *
+	                ((data_desc->limit_high_attr2 & (DA_LIMIT_4K >> 8)) ? 4096 : 1);
+
+	/* 检查用户态 ESP 是否在合理范围内 */
+	u32 user_esp = p->regs.esp;
+	if (user_esp >= data_size) {
+		result->valid = 0;
+		result->bad_ebp = user_esp;
+		result->error_code = 2; /* 栈指针越界 */
+		return;
+	}
+
+	/* 遍历 EBP 链，检查每层的返回地址 */
+	user_ebp = p->regs.ebp;
+	prev_ebp = 0;
+
+	for (i = 0; i < 16; i++) {  /* 最多检查 16 层 */
+		/* ebp 为 0 表示到达栈底 */
+		if (user_ebp == 0)
+			break;
+
+		/* ebp 必须在有效范围内 */
+		if (user_ebp < 8 || user_ebp + 8 > data_size)
+			break;
+
+		/* ebp 必须向高地址方向增长（除了第一帧） */
+		if (prev_ebp != 0 && user_ebp <= prev_ebp)
+			break;
+
+		/* 计算线性地址，越界则立即终止，避免 #PF 卡死 */
+		linear_ebp = data_base + user_ebp;
+		if (linear_ebp + 8 > (u32)memory_size) {
+			result->valid = 0;
+			result->bad_ebp = user_ebp;
+			result->error_code = 2; /* 栈指针越界/未映射 */
+			return;
+		}
+
+		/* 读取栈内容 */
+		saved_ebp = *((u32*)linear_ebp);
+		ret_addr = *((u32*)(linear_ebp + 4));
+
+		/* 检查返回地址 */
+		if (ret_addr != 0 && ret_addr >= code_size) {
+			result->valid = 0;
+			result->bad_ret_addr = ret_addr;
+			result->bad_ebp = user_ebp;
+			result->error_code = 1;
+			return;
+		}
+
+		result->frames_checked++;
+		prev_ebp = user_ebp;
+		user_ebp = saved_ebp;
+	}
+}

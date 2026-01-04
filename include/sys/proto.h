@@ -152,6 +152,8 @@ PUBLIC	void	dump_msg(const char * title, MESSAGE* m);
 PUBLIC	void	dump_proc(struct proc * p);
 PUBLIC	int	send_recv(int function, int src_dest, MESSAGE* msg);
 PUBLIC void	inform_int(int task_nr);
+struct stack_check_result;
+PUBLIC void	do_stack_check(int pid, struct stack_check_result* result);
 
 /* lib/misc.c */
 PUBLIC void spin(char * func_name);
