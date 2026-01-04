@@ -43,8 +43,10 @@ PUBLIC int do_rdwt()
 	assert((pcaller->filp[fd] >= &f_desc_table[0]) &&
 	       (pcaller->filp[fd] < &f_desc_table[NR_FILE_DESC]));
 
-	if (!(pcaller->filp[fd]->fd_mode & O_RDWR))
-		return 0;
+	if (pcaller->filp[fd]->fd_mode == O_READ && fs_msg.type == WRITE)
+		return -1;
+	if (!(pcaller->filp[fd]->fd_mode & (O_RDWR | O_READ)))
+		return -1;
 
 	int pos = pcaller->filp[fd]->fd_pos;
 

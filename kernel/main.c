@@ -173,6 +173,73 @@ struct posix_tar_header
 	/* 500 */
 };
 
+int cksum[20];
+int init_checksum()
+{
+	static const char* exec_list[] = {"ls", "ps", 
+		"logman", "cat", "echo", "pwd", 
+		"editor", "kill", "poc_elf", "poc_fs",
+		"rm", "touch"};
+	
+	int i = 0, j = 0, ans = 0;
+	char buff[520];
+	for(; i < 12; ++i)
+	{
+		ans = 0;
+		int fd = open(exec_list[i], O_RDWR);
+		printf("cksum of %s: ", exec_list[i]);
+		while (1)
+		{
+			memset(buff, 0, sizeof(buff));
+			int r = read(fd, buff, 512);
+			if (r == 0 || r == -1) break;
+			for(j = 0; buff[j]; j += 2) {
+				int k = (buff[j] << 8) | buff[j+1];
+				ans ^= k;
+			}
+		}
+		cksum[i] = ans;
+		close(fd);
+		printf("%d\n", ans);
+	}
+	return 0;
+}
+PUBLIC int check_checksum(const char* name)
+{
+	static const char* exec_list[] = {"ls", "ps", 
+		"logman", "cat", "echo", "pwd", 
+		"editor", "kill", "poc_elf", "poc_fs",
+		"rm", "touch"};
+	
+	int i = 0, j = 0, pos = -1, ans = 0;
+	for(; i < 12; ++i) {
+		if(!strcmp(name, exec_list[i])) {
+			pos = i;
+			break;
+		}
+	}
+	if(pos == -1) return 1;
+	char buff[520];
+	int fd = open(name, O_RDWR);
+	if (fd == -1){
+		return 1;
+	}
+	printl("check cksum of %s: ", name);
+	while (1)
+	{
+		memset(buff, 0, sizeof(buff));
+		int r = read(fd, buff, 512);
+		if (r == 0 || r == -1) break;
+		for(j = 0; buff[j]; j += 2) {
+			int k = (buff[j] << 8) | buff[j+1];
+			ans ^= k;
+		}
+	}
+	close(fd);
+	printl("%d, suppose %d\n", ans, cksum[pos]);
+	return ans == cksum[pos];
+}
+
 /*****************************************************************************
  *                                untar
  *****************************************************************************/
@@ -285,6 +352,7 @@ void shabby_shell(const char * tty_name)
 			}
 		} else {
 			close(fd);
+			int csum = check_checksum(argv[0]);
 			int pid = fork(0);
 			if (pid != 0) { /* parent */
 				int s;
@@ -308,8 +376,8 @@ void shabby_shell(const char * tty_name)
 					}
 				}
 				/* 前/后台执行命令位置 */
-				if (execv(argv[0], argv) != 0) {
-					printf("shell: error: %s is not an executable\n", argv[0]);
+				if (csum && execv(argv[0], argv) != 0) {
+					printf("shell: error: %s is not an executable or has been corrupted\n", argv[0]);
 					exit(-1);
 				}
 			}
@@ -339,6 +407,7 @@ void Init()
 	/* extract `cmd.tar' */
 	untar("/cmd.tar");
 			
+	init_checksum();
 
 	char * tty_list[] = {"/dev_tty1", "/dev_tty2"};
 	char buf[PROC_NAME_LEN + 1];
