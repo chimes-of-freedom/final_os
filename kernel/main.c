@@ -357,7 +357,6 @@ void shabby_shell(const char * tty_name)
 			if (pid != 0) { /* parent */
 				int s;
 				if (background) {
-					printf("pid = %d\n", pid);
 					/**
 					 * 对于后台命令采用 double-fork：
 					 * 回收第一子进程避免僵尸，孙进程由 INIT 收尸
@@ -372,6 +371,7 @@ void shabby_shell(const char * tty_name)
 				if (background) {
 					int gpid = fork(0);
 					if (gpid != 0) {
+						printf("pid = %d\n", gpid);
 						exit(0); /* 让父进程只需回收这一层 */
 					}
 				}
