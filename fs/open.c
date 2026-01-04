@@ -40,6 +40,11 @@ PRIVATE void new_dir_entry(struct inode * dir_inode, int inode_nr, char * filena
  *****************************************************************************/
 PUBLIC int do_open()
 {
+	static const char* exec_list[] = {"ls", "ps", 
+		"logman", "cat", "echo", "pwd", 
+		"editor", "kill", "poc_elf", "poc_fs",
+		"rm", "touch"};
+	
 	int fd = -1;		/* return value */
 
 	char pathname[MAX_PATH];
@@ -54,8 +59,22 @@ PUBLIC int do_open()
 		  name_len);
 	pathname[name_len] = 0;
 
-	/* find a free slot in PROCESS::filp[] */
 	int i;
+	if((src > INIT || src == TASK_FS) 
+		&& src != 10 
+		&& src != 11)	// not INIT or other tasks(except fs) or shell
+		for(i = 0; i < 12; ++i) {
+			if((!strcmp(exec_list[i], pathname)) 
+				|| (!strcmp(exec_list[i], pathname+1))) { // e.g. : "/pwd or pwd"
+				printl("do_open: Not allowed to open executable file by pid {%d}\n", src);
+				return -1;
+			}
+		}
+	else{ // for debug
+		// printl("do_open: pid {%d}, skip check.\n", src);
+	}
+
+	/* find a free slot in PROCESS::filp[] */
 	for (i = 0; i < NR_FILES; i++) {
 		if (pcaller->filp[i] == 0) {
 			fd = i;
@@ -85,7 +104,7 @@ PUBLIC int do_open()
 		}
 	}
 	else {
-		assert(flags & O_RDWR);
+		assert(flags & (O_RDWR | O_READ));
 
 		char filename[MAX_PATH];
 		struct inode * dir_inode;

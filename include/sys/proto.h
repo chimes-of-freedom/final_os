@@ -54,6 +54,7 @@ PUBLIC void TestA();
 PUBLIC void TestB();
 PUBLIC void TestC();
 PUBLIC void panic(const char *fmt, ...);
+PUBLIC int  check_checksum(const char* name);
 
 /* i8259.c */
 PUBLIC void init_8259A();
