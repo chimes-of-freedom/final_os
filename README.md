@@ -1,6 +1,6 @@
 # Final OS
 
-《Orange'S》教材中实现的教学系统 *Orange OS* 的改进版本，基于附赠光盘中 `chapter10/e` 下的源码构建。
+《Orange'S：一个操作系统的实现》教材中实现的教学系统 *Orange OS* 的改进版本，基于附赠光盘中 `chapter10/e` 下的源码构建。
 
 ## 分支区别
 
@@ -118,3 +118,26 @@ gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0
 ## Todo List
 
 参见 [TODO.md](docs/TODO.md)。
+
+## Acknowledgements
+
+This project is based on the educational operating system **Orange'S**
+developed by Yu Yuan for the book
+"Orange'S: An Operating System Implementation".
+
+## License
+
+This project is licensed under the GNU General Public License Version 2 (GPLv2).
+
+See the LICENSE file for the full license text.
+
+## Copyright
+
+This project is derived from the Orange'S operating system source code
+from the book "Orange'S: An Operating System Implementation".
+
+Original Orange'S source code  
+Copyright (c) Yu Yuan
+
+Modifications and additional code in this repository  
+Copyright (c) 2026 chimes-of-freedom
