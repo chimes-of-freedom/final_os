@@ -1,8 +1,8 @@
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                              protect.c
+			      protect.c
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                                    Forrest Yu, 2005
+						    Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 #include "type.h"
@@ -58,7 +58,7 @@ void	hwint15();
 
 
 /*======================================================================*
-                            init_prot
+			    init_prot
  *----------------------------------------------------------------------*
  初始化 IDT
  *======================================================================*/
@@ -115,53 +115,53 @@ PUBLIC void init_prot()
 	init_idt_desc(INT_VECTOR_COPROC_ERR,	DA_386IGate,
 		      copr_error,		PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 0,      DA_386IGate,
-                      hwint00,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 0,      DA_386IGate,
+		      hwint00,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 1,      DA_386IGate,
-                      hwint01,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 1,      DA_386IGate,
+		      hwint01,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 2,      DA_386IGate,
-                      hwint02,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 2,      DA_386IGate,
+		      hwint02,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 3,      DA_386IGate,
-                      hwint03,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 3,      DA_386IGate,
+		      hwint03,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 4,      DA_386IGate,
-                      hwint04,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 4,      DA_386IGate,
+		      hwint04,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 5,      DA_386IGate,
-                      hwint05,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 5,      DA_386IGate,
+		      hwint05,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 6,      DA_386IGate,
-                      hwint06,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 6,      DA_386IGate,
+		      hwint06,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ0 + 7,      DA_386IGate,
-                      hwint07,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ0 + 7,      DA_386IGate,
+		      hwint07,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 0,      DA_386IGate,
-                      hwint08,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 0,      DA_386IGate,
+		      hwint08,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 1,      DA_386IGate,
-                      hwint09,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 1,      DA_386IGate,
+		      hwint09,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 2,      DA_386IGate,
-                      hwint10,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 2,      DA_386IGate,
+		      hwint10,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 3,      DA_386IGate,
-                      hwint11,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 3,      DA_386IGate,
+		      hwint11,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 4,      DA_386IGate,
-                      hwint12,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 4,      DA_386IGate,
+		      hwint12,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 5,      DA_386IGate,
-                      hwint13,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 5,      DA_386IGate,
+		      hwint13,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 6,      DA_386IGate,
-                      hwint14,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 6,      DA_386IGate,
+		      hwint14,                  PRIVILEGE_KRNL);
 
-        init_idt_desc(INT_VECTOR_IRQ8 + 7,      DA_386IGate,
-                      hwint15,                  PRIVILEGE_KRNL);
+	init_idt_desc(INT_VECTOR_IRQ8 + 7,      DA_386IGate,
+		      hwint15,                  PRIVILEGE_KRNL);
 
 	init_idt_desc(INT_VECTOR_SYS_CALL,	DA_386IGate,
 		      sys_call,			PRIVILEGE_USER);

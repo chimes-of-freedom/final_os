@@ -34,7 +34,7 @@ PRIVATE void	clear_screen(int pos, int len);
  *****************************************************************************/
 /**
  * Initialize the console of a certain tty.
- * 
+ *
  * @param tty  Whose console is to be initialized.
  *****************************************************************************/
 PUBLIC void init_screen(TTY* tty)
@@ -42,7 +42,7 @@ PUBLIC void init_screen(TTY* tty)
 	int nr_tty = tty - tty_table;
 	tty->console = console_table + nr_tty;
 
-	/* 
+	/*
 	 * NOTE:
 	 *   variables related to `position' and `size' below are
 	 *   in WORDs, but not in BYTEs.
@@ -59,7 +59,7 @@ PUBLIC void init_screen(TTY* tty)
 		disp_pos = 0;
 	}
 	else {
-		/* 
+		/*
 		 * `?' in this string will be replaced with 0, 1, 2, ...
 		 */
 		const char prompt[] = "[TTY #?]\n";
@@ -78,7 +78,7 @@ PUBLIC void init_screen(TTY* tty)
  *****************************************************************************/
 /**
  * Print a char in a certain console.
- * 
+ *
  * @param con  The console to which the char is printed.
  * @param ch   The char to print.
  *****************************************************************************/
@@ -142,7 +142,7 @@ PUBLIC void out_char(CONSOLE* con, char ch)
  *****************************************************************************/
 /**
  * Write whitespaces to the screen.
- * 
+ *
  * @param pos  Write from here.
  * @param len  How many whitespaces will be written.
  *****************************************************************************/
@@ -161,9 +161,9 @@ PRIVATE void clear_screen(int pos, int len)
  *****************************************************************************/
 /**
  * Uses `nr_current_console' to determine if a console is the current one.
- * 
+ *
  * @param con   Ptr to console.
- * 
+ *
  * @return   TRUE if con is the current console.
  *****************************************************************************/
 PUBLIC int is_current_console(CONSOLE* con)
@@ -177,7 +177,7 @@ PUBLIC int is_current_console(CONSOLE* con)
  *****************************************************************************/
 /**
  * Display the cursor by setting CRTC (6845 compatible) registers.
- * 
+ *
  * @param position  Position of the cursor based on the beginning of the video
  *                  memory. Note that it counts in WORDs, not in BYTEs.
  *****************************************************************************/
@@ -197,7 +197,7 @@ PRIVATE void set_cursor(unsigned int position)
  *****************************************************************************/
 /**
  * Routine for hardware screen scrolling.
- * 
+ *
  * @param addr  Offset in the video memory.
  *****************************************************************************/
 PRIVATE void set_video_start_addr(u32 addr)
@@ -216,7 +216,7 @@ PRIVATE void set_video_start_addr(u32 addr)
  *****************************************************************************/
 /**
  * Select a console as the current.
- * 
+ *
  * @param nr_console   Console nr, range in [0, NR_CONSOLES-1].
  *****************************************************************************/
 PUBLIC void select_console(int nr_console)
@@ -241,7 +241,7 @@ PUBLIC void select_console(int nr_console)
  * When there is no line below the bottom of the screen, scrolling UP takes no
  * effects; when there is no line above the top of the screen, scrolling DOWN
  * takes no effects.
- * 
+ *
  * @param con   The console whose screen is to be scrolled.
  * @param dir   SCR_UP : scroll the screen upwards;
  *              SCR_DN : scroll the screen downwards
@@ -302,7 +302,7 @@ PUBLIC void scroll_screen(CONSOLE* con, int dir)
 /**
  * Set the cursor and starting address of a console by writing the
  * CRT Controller Registers.
- * 
+ *
  * @param con  The console to be set.
  *****************************************************************************/
 PRIVATE void flush(CONSOLE* con)
@@ -334,7 +334,7 @@ PRIVATE void flush(CONSOLE* con)
  *
  * Note that the addresses of dst and src are not pointers, but integers, 'coz
  * in most cases we pass integers into it as parameters.
- * 
+ *
  * @param dst   Addr of destination.
  * @param src   Addr of source.
  * @param size  How many words will be copied.

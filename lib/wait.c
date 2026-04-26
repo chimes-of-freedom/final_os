@@ -24,9 +24,9 @@
  *****************************************************************************/
 /**
  * Wait for the child process to terminiate.
- * 
+ *
  * @param status  The value returned from the child.
- * 
+ *
  * @return  PID of the terminated child.
  *****************************************************************************/
 PUBLIC int wait(int * status)

@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   klib.c
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   2005
  *****************************************************************************
@@ -30,7 +30,7 @@
 /**
  * <Ring 0~1> The boot parameters have been saved by LOADER.
  *            We just read them out.
- * 
+ *
  * @param pbp  Ptr to the boot params structure
  *****************************************************************************/
 PUBLIC void get_boot_params(struct boot_params * pbp)
@@ -61,7 +61,7 @@ PUBLIC void get_boot_params(struct boot_params * pbp)
  *
  * - The meaning of `base':	base => first_valid_byte
  * - The meaning of `limit':	base + limit => last_valid_byte
- * 
+ *
  * @param b   Memory base of kernel.
  * @param l   Memory limit of kernel.
  *****************************************************************************/
@@ -117,7 +117,7 @@ PUBLIC char * itoa(char * str, int num)/* 数字前面的 0 不被显示出来, 
 	if(num == 0){
 		*p++ = '0';
 	}
-	else{	
+	else{
 		for(i=28;i>=0;i-=4){
 			ch = (num >> i) & 0xF;
 			if(flag || (ch > 0)){

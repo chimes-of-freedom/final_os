@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   read_write.c
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   2008
  *****************************************************************************
@@ -29,7 +29,7 @@
  *
  * Sector map is not needed to update, since the sectors for the file have been
  * allocated and the bits are set when the file was created.
- * 
+ *
  * @return How many bytes have been read/written.
  *****************************************************************************/
 PUBLIC int do_rdwt()

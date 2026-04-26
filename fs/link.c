@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   link.c
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   Tue Jun  3 17:05:10 2008
  *****************************************************************************
@@ -29,7 +29,7 @@
  *
  * @note We clear the i-node in inode_array[] although it is not really needed.
  *       We don't clear the data bytes so the file is recoverable.
- * 
+ *
  * @return On success, zero is returned.  On error, -1 is returned.
  *****************************************************************************/
 PUBLIC int do_unlink()

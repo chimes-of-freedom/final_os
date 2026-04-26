@@ -1,8 +1,8 @@
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                            main.c
+			    main.c
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                                    Forrest Yu, 2005
+						    Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 #include "type.h"
@@ -22,8 +22,8 @@
  *                               kernel_main
  *****************************************************************************/
 /**
- * jmp from kernel.asm::_start. 
- * 
+ * jmp from kernel.asm::_start.
+ *
  *****************************************************************************/
 PUBLIC int kernel_main()
 {
@@ -31,8 +31,8 @@ PUBLIC int kernel_main()
 		 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
 	int i, j, eflags, prio;
-        u8  rpl;
-        u8  priv; /* privilege */
+	u8  rpl;
+	u8  priv; /* privilege */
 
 	struct task * t;
 	struct proc * p = proc_table;
@@ -45,20 +45,20 @@ PUBLIC int kernel_main()
 			continue;
 		}
 
-	        if (i < NR_TASKS) {     /* TASK */
-                        t	= task_table + i;
-                        priv	= PRIVILEGE_TASK;
-                        rpl     = RPL_TASK;
-                        eflags  = 0x1202;/* IF=1, IOPL=1, bit 2 is always 1 */
+		if (i < NR_TASKS) {     /* TASK */
+			t	= task_table + i;
+			priv	= PRIVILEGE_TASK;
+			rpl     = RPL_TASK;
+			eflags  = 0x1202;/* IF=1, IOPL=1, bit 2 is always 1 */
 			prio    = 15;
-                }
-                else {                  /* USER PROC */
-                        t	= user_proc_table + (i - NR_TASKS);
-                        priv	= PRIVILEGE_USER;
-                        rpl     = RPL_USER;
-                        eflags  = 0x202;	/* IF=1, bit 2 is always 1 */
+		}
+		else {                  /* USER PROC */
+			t	= user_proc_table + (i - NR_TASKS);
+			priv	= PRIVILEGE_USER;
+			rpl     = RPL_USER;
+			eflags  = 0x202;	/* IF=1, bit 2 is always 1 */
 			prio    = 5;
-                }
+		}
 
 		strcpy(p->name, t->name);	/* name of the process */
 		p->p_parent = NO_TASK;
@@ -127,7 +127,7 @@ PUBLIC int kernel_main()
 	p_proc_ready	= proc_table;
 
 	init_clock();
-        init_keyboard();
+	init_keyboard();
 
 	restart();
 
@@ -178,7 +178,7 @@ struct posix_tar_header
  *****************************************************************************/
 /**
  * Extract the tar file and store them.
- * 
+ *
  * @param filename The tar file.
  *****************************************************************************/
 void untar(const char * filename)
@@ -231,7 +231,7 @@ void untar(const char * filename)
  *****************************************************************************/
 /**
  * A very very simple shell.
- * 
+ *
  * @param tty_name  TTY file name.
  *****************************************************************************/
 void shabby_shell(const char * tty_name)
@@ -324,7 +324,7 @@ void shabby_shell(const char * tty_name)
  *****************************************************************************/
 /**
  * The hen.
- * 
+ *
  *****************************************************************************/
 void Init()
 {
@@ -337,7 +337,7 @@ void Init()
 
 	/* extract `cmd.tar' */
 	untar("/cmd.tar");
-			
+
 
 	char * tty_list[] = {"/dev_tty1", "/dev_tty2"};
 	char buf[PROC_NAME_LEN + 1];
@@ -353,7 +353,7 @@ void Init()
 			printf("[child is running, pid:%d]\n", getpid());
 			close(fd_stdin);
 			close(fd_stdout);
-			
+
 			shabby_shell(tty_list[i]);
 			assert(0);
 		}
@@ -386,7 +386,7 @@ void TestB()
 }
 
 /*======================================================================*
-                               TestB
+                               TestC
  *======================================================================*/
 void TestC()
 {

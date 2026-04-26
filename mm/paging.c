@@ -101,8 +101,8 @@ PUBLIC void map_range_identity(u32 cr3_phys, u32 linear_start, u32 bytes, u32 fl
 		 * 因此不能和内核共享 PDE2 指向的页表
 		 */
 		else if (!is_kernel_pd &&
-		         pd[pde_idx] >= PAGE_TABLE_BASE && pd[pde_idx] < PAGE_TABLE_AREA_END &&
-		         pd[pde_idx] < (PAGE_TABLE_BASE + 3 * PAGE_SIZE)) {
+			 pd[pde_idx] >= PAGE_TABLE_BASE && pd[pde_idx] < PAGE_TABLE_AREA_END &&
+			 pd[pde_idx] < (PAGE_TABLE_BASE + 3 * PAGE_SIZE)) {
 			u32 pt_old = pd[pde_idx] & PAGE_MASK;
 			u32 pt_new = alloc_table_frame();
 			memcpy((void*)pt_new, (void*)pt_old, PAGE_SIZE);

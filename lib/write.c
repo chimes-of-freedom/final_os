@@ -24,11 +24,11 @@
  *****************************************************************************/
 /**
  * Write to a file descriptor.
- * 
+ *
  * @param fd     File descriptor.
  * @param buf    Buffer including the bytes to write.
  * @param count  How many bytes to write.
- * 
+ *
  * @return  On success, the number of bytes written are returned.
  *          On error, -1 is returned.
  *****************************************************************************/

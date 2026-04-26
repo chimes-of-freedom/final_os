@@ -32,7 +32,7 @@
  * @param function  SEND, RECEIVE or BOTH
  * @param src_dest  The caller's proc_nr
  * @param msg       Pointer to the MESSAGE struct
- * 
+ *
  * @return always 0.
  *****************************************************************************/
 PUBLIC int send_recv(int function, int src_dest, MESSAGE* msg)
@@ -66,11 +66,11 @@ PUBLIC int send_recv(int function, int src_dest, MESSAGE* msg)
  *****************************************************************************/
 /**
  * Compare memory areas.
- * 
+ *
  * @param s1  The 1st area.
  * @param s2  The 2nd area.
  * @param n   The first n bytes will be compared.
- * 
+ *
  * @return  an integer less than, equal to, or greater than zero if the first
  *          n bytes of s1 is found, respectively, to be less than, to match,
  *          or  be greater than the first n bytes of s2.
@@ -97,10 +97,10 @@ PUBLIC int memcmp(const void * s1, const void *s2, int n)
  *****************************************************************************/
 /**
  * Compare two strings.
- * 
+ *
  * @param s1  The 1st string.
  * @param s2  The 2nd string.
- * 
+ *
  * @return  an integer less than, equal to, or greater than zero if s1 (or the
  *          first n bytes thereof) is  found,  respectively,  to  be less than,
  *          to match, or be greater than s2.
@@ -128,10 +128,10 @@ PUBLIC int strcmp(const char * s1, const char *s2)
  *****************************************************************************/
 /**
  * Concatenate two strings.
- * 
+ *
  * @param s1  The 1st string.
  * @param s2  The 2nd string.
- * 
+ *
  * @return  Ptr to the 1st string.
  *****************************************************************************/
 PUBLIC char * strcat(char * s1, const char *s2)
@@ -232,13 +232,13 @@ PUBLIC void assertion_failure(char *exp, char *file, char *base_file, int line)
 	/**
 	 * If assertion fails in a TASK, the system will halt before
 	 * printl() returns. If it happens in a USER PROC, printl() will
-	 * return like a common routine and arrive here. 
+	 * return like a common routine and arrive here.
 	 * @see sys_printx()
-	 * 
+	 *
 	 * We use a forever loop to prevent the proc from going on:
 	 */
 	spin("assertion_failure()");
 
 	/* should never arrive here */
-        __asm__ __volatile__("ud2");
+	__asm__ __volatile__("ud2");
 }

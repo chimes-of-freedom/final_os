@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   include/sys/hd.h
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   2008
  *****************************************************************************
@@ -136,17 +136,17 @@ struct part_ent {
 						+-----+-----+-----+-----+-----+-----+-----+-----+
 						|  1  |  L  |  1  | DRV | HS3 | HS2 | HS1 | HS0 |
 						+-----+-----+-----+-----+-----+-----+-----+-----+
-						         |           |   \_____________________/
-						         |           |              |
-						         |           |              `------------ If L=0, Head Select.
-						         |           |                                    These four bits select the head number.
-						         |           |                                    HS0 is the least significant.
-						         |           |                            If L=1, HS0 through HS3 contain bit 24-27 of the LBA.
-						         |           `--------------------------- Drive. When DRV=0, drive 0 (master) is selected. 
-						         |                                               When DRV=1, drive 1 (slave) is selected.
-						         `--------------------------------------- LBA mode. This bit selects the mode of operation.
-					 	                                                            When L=0, addressing is by 'CHS' mode.
-					 	                                                            When L=1, addressing is by 'LBA' mode.
+							 |           |   \_____________________/
+							 |           |              |
+							 |           |              `------------ If L=0, Head Select.
+							 |           |                                    These four bits select the head number.
+							 |           |                                    HS0 is the least significant.
+							 |           |                            If L=1, HS0 through HS3 contain bit 24-27 of the LBA.
+							 |           `--------------------------- Drive. When DRV=0, drive 0 (master) is selected.
+							 |                                               When DRV=1, drive 1 (slave) is selected.
+							 `--------------------------------------- LBA mode. This bit selects the mode of operation.
+					 								    When L=0, addressing is by 'CHS' mode.
+					 								    When L=1, addressing is by 'LBA' mode.
 					*/
 #define REG_STATUS	0x1F7		/*	Status				I		*/
 					/* 	Any pending interrupt is cleared whenever this register is read.
@@ -184,7 +184,7 @@ struct part_ent {
 						| 20h    | Read Sectors With Retry         |    V  V  V  V   |
 						| E8h  @ | Write Buffer                    |             D   |
 						+--------+---------------------------------+-----------------+
-					
+
 						KEY FOR SYMBOLS IN THE TABLE:
 						===========================================-----=========================================================================
 						PC    Register 1F1: Write Precompensation	@     These commands are optional and may not be supported by some drives.
@@ -215,7 +215,7 @@ struct part_ent {
 						   |                                                  5 microsecondsbefore setting RST=0, to ensure
 						   |                                                  that the drive recognizes the reset.
 						   `--------------------------------------------- HOB (High Order Byte)
-						                                                    - defined by 48-bit Address feature set.
+												    - defined by 48-bit Address feature set.
 					*/
 #define REG_ALT_STATUS	REG_DEV_CTRL	/*	Alternate Status		I		*/
 					/*	This register contains the same information as the Status Register.

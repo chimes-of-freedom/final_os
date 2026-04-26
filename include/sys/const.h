@@ -172,7 +172,7 @@
  * @brief MESSAGE types
  */
 enum msgtype {
-	/* 
+	/*
 	 * when hard interrupt occurs, a msg (with type==HARD_INT) will
 	 * be sent to some tasks
 	 */
@@ -188,7 +188,7 @@ enum msgtype {
 	SUSPEND_PROC, RESUME_PROC,
 
 	/* MM */
-	EXEC, WAIT, KILL, MALLOC, FREE, 
+	EXEC, WAIT, KILL, MALLOC, FREE,
 
 	/* FS & MM */
 	FORK, EXIT,

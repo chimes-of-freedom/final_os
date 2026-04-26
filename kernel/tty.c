@@ -133,7 +133,7 @@ PUBLIC void task_tty()
  * Things to be initialized before a tty can be used:
  *   -# the input buffer
  *   -# the corresponding console
- * 
+ *
  * @param tty  TTY stands for teletype, a cool ancient magic thing.
  *****************************************************************************/
 PRIVATE void init_tty(TTY* tty)
@@ -157,7 +157,7 @@ PRIVATE void init_tty(TTY* tty)
  *****************************************************************************/
 /**
  * keyboard_read() will invoke this routine after having recognized a key press.
- * 
+ *
  * @param tty  The key press is for whom.
  * @param key  The integer key with metadata.
  *****************************************************************************/
@@ -218,7 +218,7 @@ PUBLIC void in_process(TTY* tty, u32 key)
  * Put a key into the in-buffer of TTY.
  *
  * @callergraph
- * 
+ *
  * @param tty  To which TTY the key is put.
  * @param key  The key. It's an integer whose higher 24 bits are metadata.
  *****************************************************************************/
@@ -242,7 +242,7 @@ PRIVATE void put_key(TTY* tty, u32 key)
  * console.
  *
  * @see keyboard_read()
- * 
+ *
  * @param tty  Ptr to TTY.
  *****************************************************************************/
 PRIVATE void tty_dev_read(TTY* tty)
@@ -257,7 +257,7 @@ PRIVATE void tty_dev_read(TTY* tty)
  *****************************************************************************/
 /**
  * Echo the char just pressed and transfer it to the waiting process.
- * 
+ *
  * @param tty   Ptr to a TTY struct.
  *****************************************************************************/
 PRIVATE void tty_dev_write(TTY* tty)
@@ -396,7 +396,7 @@ PRIVATE void tty_dev_write(TTY* tty)
  * @note The routine will return immediately after setting some members of
  * TTY struct, telling FS to suspend the proc who wants to read. The real
  * transfer (tty buffer -> proc buffer) is not done here.
- * 
+ *
  * @param tty  From which TTY the caller proc wants to read.
  * @param msg  The MESSAGE just received.
  *****************************************************************************/
@@ -420,7 +420,7 @@ PRIVATE void tty_do_read(TTY* tty, MESSAGE* msg)
  *****************************************************************************/
 /**
  * Invoked when task TTY receives DEV_WRITE message.
- * 
+ *
  * @param tty  To which TTY the calller proc is bound.
  * @param msg  The MESSAGE.
  *****************************************************************************/
@@ -461,12 +461,12 @@ PRIVATE void tty_do_write(TTY* tty, MESSAGE* msg)
  * something goes really wrong and the system is to be halted; if it equals
  * MAG_CH_ASSERT, then this syscall was invoked by `assert()', which means
  * an assertion failure has occured. @see kernel/main lib/misc.c.
- * 
+ *
  * @param _unused1  Ignored.
  * @param _unused2  Ignored.
  * @param s         The string to be printed.
  * @param p_proc    Caller proc.
- * 
+ *
  * @return  Zero if success.
  *****************************************************************************/
 PUBLIC int sys_printx(int _unused1, int _unused2, char* s, struct proc* p_proc)
@@ -546,7 +546,7 @@ PUBLIC int sys_printx(int _unused1, int _unused2, char* s, struct proc* p_proc)
  *****************************************************************************/
 /**
  * For debug only.
- * 
+ *
  *****************************************************************************/
 PUBLIC void dump_tty_buf()
 {

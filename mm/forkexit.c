@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   forkexit.c
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   Tue May  6 00:37:15 2008
  *****************************************************************************
@@ -184,9 +184,9 @@ PUBLIC int do_fork()
  *         - A exit(), and
  *         - P does not wait(), neither does it exit(). that is to say, P just
  *           keeps running without terminating itself or its child
- * 
+ *
  * @param status  Exiting status for parent.
- * 
+ *
  *****************************************************************************/
 PUBLIC void do_exit(int status)
 {
@@ -371,7 +371,7 @@ PRIVATE void do_process_exit(int pid, int status)
  * Do the last jobs to clean up a proc thoroughly:
  *     - Send proc's parent a message to unblock it, and
  *     - release proc's proc_table[] entry
- * 
+ *
  * @param proc  Process to clean up.
  *****************************************************************************/
 PRIVATE void cleanup(struct proc * proc)

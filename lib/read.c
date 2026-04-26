@@ -24,11 +24,11 @@
  *****************************************************************************/
 /**
  * Read from a file descriptor.
- * 
+ *
  * @param fd     File descriptor.
  * @param buf    Buffer to accept the bytes read.
  * @param count  How many bytes to read.
- * 
+ *
  * @return  On success, the number of bytes read are returned.
  *          On error, -1 is returned.
  *****************************************************************************/

@@ -24,10 +24,10 @@
  *****************************************************************************/
 /**
  * open/create a file.
- * 
+ *
  * @param pathname  The full path of the file to be opened/created.
  * @param flags     O_CREAT, O_RDWR, etc.
- * 
+ *
  * @return File descriptor if successful, otherwise -1.
  *****************************************************************************/
 PUBLIC int open(const char *pathname, int flags)

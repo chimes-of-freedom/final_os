@@ -49,7 +49,7 @@ PRIVATE	struct hd_info	hd_info[1];
  *****************************************************************************/
 /**
  * Main loop of HD driver.
- * 
+ *
  *****************************************************************************/
 PUBLIC void task_hd()
 {
@@ -122,7 +122,7 @@ PRIVATE void init_hd()
  * <Ring 1> This routine handles DEV_OPEN message. It identify the drive
  * of the given device and read the partition table of the drive if it
  * has not been read.
- * 
+ *
  * @param device The device to be opened.
  *****************************************************************************/
 PRIVATE void hd_open(int device)
@@ -142,8 +142,8 @@ PRIVATE void hd_open(int device)
  *                                hd_close
  *****************************************************************************/
 /**
- * <Ring 1> This routine handles DEV_CLOSE message. 
- * 
+ * <Ring 1> This routine handles DEV_CLOSE message.
+ *
  * @param device The device to be opened.
  *****************************************************************************/
 PRIVATE void hd_close(int device)
@@ -160,7 +160,7 @@ PRIVATE void hd_close(int device)
  *****************************************************************************/
 /**
  * <Ring 1> This routine handles DEV_READ and DEV_WRITE message.
- * 
+ *
  * @param p Message ptr.
  *****************************************************************************/
 PRIVATE void hd_rdwt(MESSAGE * p)
@@ -211,7 +211,7 @@ PRIVATE void hd_rdwt(MESSAGE * p)
 		bytes_left -= SECTOR_SIZE;
 		la += SECTOR_SIZE;
 	}
-}															
+}
 
 
 /*****************************************************************************
@@ -219,7 +219,7 @@ PRIVATE void hd_rdwt(MESSAGE * p)
  *****************************************************************************/
 /**
  * <Ring 1> This routine handles the DEV_IOCTL message.
- * 
+ *
  * @param p  Ptr to the MESSAGE.
  *****************************************************************************/
 PRIVATE void hd_ioctl(MESSAGE * p)
@@ -249,7 +249,7 @@ PRIVATE void hd_ioctl(MESSAGE * p)
  *****************************************************************************/
 /**
  * <Ring 1> Get a partition table of a drive.
- * 
+ *
  * @param drive   Drive nr (0 for the 1st disk, 1 for the 2nd, ...)n
  * @param sect_nr The sector at which the partition table is located.
  * @param entry   Ptr to part_ent struct.
@@ -281,7 +281,7 @@ PRIVATE void get_part_table(int drive, int sect_nr, struct part_ent * entry)
 /**
  * <Ring 1> This routine is called when a device is opened. It reads the
  * partition table(s) and fills the hd_info struct.
- * 
+ *
  * @param device Device nr.
  * @param style  P_PRIMARY or P_EXTENDED.
  *****************************************************************************/
@@ -298,7 +298,7 @@ PRIVATE void partition(int device, int style)
 
 		int nr_prim_parts = 0;
 		for (i = 0; i < NR_PART_PER_DRIVE; i++) { /* 0~3 */
-			if (part_tbl[i].sys_id == NO_PART) 
+			if (part_tbl[i].sys_id == NO_PART)
 				continue;
 
 			nr_prim_parts++;
@@ -343,7 +343,7 @@ PRIVATE void partition(int device, int style)
  *****************************************************************************/
 /**
  * <Ring 1> Print disk info.
- * 
+ *
  * @param hdi  Ptr to struct hd_info.
  *****************************************************************************/
 PRIVATE void print_hdinfo(struct hd_info * hdi)
@@ -376,7 +376,7 @@ PRIVATE void print_hdinfo(struct hd_info * hdi)
  *****************************************************************************/
 /**
  * <Ring 1> Get the disk information.
- * 
+ *
  * @param drive  Drive Nr.
  *****************************************************************************/
 PRIVATE void hd_identify(int drive)
@@ -402,7 +402,7 @@ PRIVATE void hd_identify(int drive)
  *****************************************************************************/
 /**
  * <Ring 1> Print the hdinfo retrieved via ATA_IDENTIFY command.
- * 
+ *
  * @param hdinfo  The buffer read from the disk i/o port.
  *****************************************************************************/
 PRIVATE void print_identify_info(u16* hdinfo)
@@ -444,7 +444,7 @@ PRIVATE void print_identify_info(u16* hdinfo)
  *****************************************************************************/
 /**
  * <Ring 1> Output a command to HD controller.
- * 
+ *
  * @param cmd  The command struct ptr.
  *****************************************************************************/
 PRIVATE void hd_cmd_out(struct hd_cmd* cmd)
@@ -474,7 +474,7 @@ PRIVATE void hd_cmd_out(struct hd_cmd* cmd)
  *****************************************************************************/
 /**
  * <Ring 1> Wait until a disk interrupt occurs.
- * 
+ *
  *****************************************************************************/
 PRIVATE void interrupt_wait()
 {
@@ -487,11 +487,11 @@ PRIVATE void interrupt_wait()
  *****************************************************************************/
 /**
  * <Ring 1> Wait for a certain status.
- * 
+ *
  * @param mask    Status mask.
  * @param val     Required status.
  * @param timeout Timeout in milliseconds.
- * 
+ *
  * @return One if sucess, zero if timeout.
  *****************************************************************************/
 PRIVATE int waitfor(int mask, int val, int timeout)
@@ -510,7 +510,7 @@ PRIVATE int waitfor(int mask, int val, int timeout)
  *****************************************************************************/
 /**
  * <Ring 0> Interrupt handler.
- * 
+ *
  * @param irq  IRQ nr of the disk interrupt.
  *****************************************************************************/
 PUBLIC void hd_handler(int irq)

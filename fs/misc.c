@@ -1,7 +1,7 @@
 /*************************************************************************//**
  *****************************************************************************
  * @file   misc.c
- * @brief  
+ * @brief
  * @author Forrest Y. Yu
  * @date   2008
  *****************************************************************************
@@ -28,7 +28,7 @@
  *                                do_stat
  *************************************************************************//**
  * Perform the stat() syscall.
- * 
+ *
  * @return  On success, zero is returned. On error, -1 is returned.
  *****************************************************************************/
 PUBLIC int do_stat()
@@ -88,7 +88,7 @@ PUBLIC int do_stat()
  *
  * @param[in] path The full path of the file to search.
  * @return         Ptr to the i-node of the file if successful, otherwise zero.
- * 
+ *
  * @see open()
  * @see do_open()
  *****************************************************************************/
@@ -161,7 +161,7 @@ PUBLIC int search_file(char * path)
  * @param[out] filename The string for the result.
  * @param[in]  pathname The full pathname.
  * @param[out] ppinode  The ptr of the dir's inode will be stored here.
- * 
+ *
  * @return Zero if success, otherwise the pathname is not valid.
  *****************************************************************************/
 PUBLIC int strip_path(char * filename, const char * pathname,

@@ -30,7 +30,7 @@ PRIVATE void init_mm();
  *****************************************************************************/
 /**
  * <Ring 1> The main loop of TASK MM.
- * 
+ *
  *****************************************************************************/
 PUBLIC void task_mm()
 {
@@ -89,7 +89,7 @@ PUBLIC void task_mm()
  *****************************************************************************/
 /**
  * Do some initialization work.
- * 
+ *
  *****************************************************************************/
 PRIVATE void init_mm()
 {
@@ -107,10 +107,10 @@ PRIVATE void init_mm()
  *****************************************************************************/
 /**
  * Allocate a memory block for a proc.
- * 
+ *
  * @param pid  Which proc the memory is for.
  * @param memsize  How many bytes is needed.
- * 
+ *
  * @return  The base of the memory just allocated.
  *****************************************************************************/
 PUBLIC int alloc_mem(int pid, int memsize)
@@ -140,9 +140,9 @@ PUBLIC int alloc_mem(int pid, int memsize)
  * we don't need to really `free' anything. In another word, a memory block is
  * dedicated to one and only one PID, no matter what proc actually uses this
  * PID.
- * 
+ *
  * @param pid  Whose memory is to be freed.
- * 
+ *
  * @return  Zero if success.
  *****************************************************************************/
 PUBLIC int free_mem(int pid)

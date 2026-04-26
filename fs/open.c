@@ -35,7 +35,7 @@ PRIVATE void new_dir_entry(struct inode * dir_inode, int inode_nr, char * filena
  *****************************************************************************/
 /**
  * Open a file and return the file descriptor.
- * 
+ *
  * @return File descriptor if successful, otherwise a negative error code.
  *****************************************************************************/
 PUBLIC int do_open()
@@ -143,7 +143,7 @@ PUBLIC int do_open()
  * @param[in] flags  Attribiutes of the new file
  *
  * @return           Ptr to i-node of the new file if successful, otherwise 0.
- * 
+ *
  * @see open()
  * @see do_open()
  *****************************************************************************/
@@ -170,7 +170,7 @@ PRIVATE struct inode * create_file(char * path, int flags)
  *****************************************************************************/
 /**
  * Handle the message CLOSE.
- * 
+ *
  * @return Zero if success.
  *****************************************************************************/
 PUBLIC int do_close()
@@ -189,7 +189,7 @@ PUBLIC int do_close()
  *****************************************************************************/
 /**
  * Handle the message LSEEK.
- * 
+ *
  * @return The new offset in bytes from the beginning of the file if successful,
  *         otherwise a negative number.
  *****************************************************************************/
@@ -228,9 +228,9 @@ PUBLIC int do_lseek()
  *****************************************************************************/
 /**
  * Allocate a bit in inode-map.
- * 
+ *
  * @param dev  In which device the inode-map is located.
- * 
+ *
  * @return  I-node nr.
  *****************************************************************************/
 PRIVATE int alloc_imap_bit(int dev)
@@ -272,10 +272,10 @@ PRIVATE int alloc_imap_bit(int dev)
  *****************************************************************************/
 /**
  * Allocate a bit in sector-map.
- * 
+ *
  * @param dev  In which device the sector-map is located.
  * @param nr_sects_to_alloc  How many sectors are allocated.
- * 
+ *
  * @return  The 1st sector nr allocated.
  *****************************************************************************/
 PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc)
@@ -333,11 +333,11 @@ PRIVATE int alloc_smap_bit(int dev, int nr_sects_to_alloc)
  *****************************************************************************/
 /**
  * Generate a new i-node and write it to disk.
- * 
+ *
  * @param dev  Home device of the i-node.
  * @param inode_nr  I-node nr.
  * @param start_sect  Start sector of the file pointed by the new i-node.
- * 
+ *
  * @return  Ptr of the new i-node.
  *****************************************************************************/
 PRIVATE struct inode * new_inode(int dev, int inode_nr, int start_sect)
@@ -364,7 +364,7 @@ PRIVATE struct inode * new_inode(int dev, int inode_nr, int start_sect)
  *****************************************************************************/
 /**
  * Write a new entry into the directory.
- * 
+ *
  * @param dir_inode  I-node of the directory.
  * @param inode_nr   I-node nr of the new file.
  * @param filename   Filename of the new file.

@@ -41,7 +41,7 @@ PUBLIC void msgtype_interpret(int msgtype, char* buf)
 			break;
 		case WRITE:
 			strcpy(buf, "WRITE");
-			break;	
+			break;
 		case LSEEK:
 			strcpy(buf, "LSEEK");
 			break;
@@ -51,7 +51,7 @@ PUBLIC void msgtype_interpret(int msgtype, char* buf)
 		case UNLINK:
 			strcpy(buf, "UNLINK");
 			break;
-		case SUSPEND_PROC:	
+		case SUSPEND_PROC:
 			strcpy(buf, "SUSPEND_PROC");
 			break;
 		case RESUME_PROC:
@@ -125,7 +125,7 @@ PUBLIC void post_log2(const char* fmt, ...)
 
 PUBLIC void task_log()
 {
-	MESSAGE	log_msg, res; 
+	MESSAGE	log_msg, res;
 	log_s logs[MAX_LOG_CNT], *ans;
 
 	memset(logs, 0, sizeof(logs));
@@ -141,7 +141,7 @@ PUBLIC void task_log()
 		base = 0;
 		int msgtype = log_msg.type;
 		int src = log_msg.source;
-		
+
 		switch(msgtype)
 		{
 			case POST_LOG:
@@ -153,7 +153,7 @@ PUBLIC void task_log()
 				logs[log_cnt].len = log_msg.CNT;
 				printl("[LOG] pid %d : \"%s\"\n", src, logs[log_cnt].text);
 				log_cnt++;
-				if(log_cnt >= MAX_LOG_CNT) 
+				if(log_cnt >= MAX_LOG_CNT)
 				{
 					log_cnt = 0;
 					roll = 1;
@@ -174,7 +174,7 @@ PUBLIC void task_log()
 
 					ans[i].pid = logs[pos].pid;
 					phys_copy(va2la(src, ans[i].text),
-						va2la(TASK_LOG, 
+						va2la(TASK_LOG,
 							logs[pos].text), logs[pos].len );
 				}
 				res.type = LOG_RET;
@@ -187,7 +187,7 @@ PUBLIC void task_log()
 				{
 					if(base >= MAX_LOG_CNT) break;
 					pos = (base + log_cnt + MAX_LOG_CNT - i) % MAX_LOG_CNT;
-					
+
 					if(logs[pos].pid != id)
 					{
 						i--;
@@ -196,7 +196,7 @@ PUBLIC void task_log()
 					}
 					ans[i].pid = logs[pos].pid;
 					phys_copy(va2la(src, ans[i].text),
-						va2la(TASK_LOG, 
+						va2la(TASK_LOG,
 							logs[pos].text), logs[pos].len );
 				}
 				res.type = LOG_RET;

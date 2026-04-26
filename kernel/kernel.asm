@@ -325,11 +325,11 @@ exception:
 ;                                   save
 ; =============================================================================
 save:
-        pushad          ; `.
-        push    ds      ;  |
-        push    es      ;  | 保存原寄存器值
-        push    fs      ;  |
-        push    gs      ; /
+	pushad          ; `.
+	push    ds      ;  |
+	push    es      ;  | 保存原寄存器值
+	push    fs      ;  |
+	push    gs      ; /
 
 	;; 注意，从这里开始，一直到 `mov esp, StackTop'，中间坚决不能用 push/pop 指令，
 	;; 因为当前 esp 指向 proc_table 里的某个位置，push 会破坏掉进程表，导致灾难性后果！
@@ -343,41 +343,41 @@ save:
 
 	mov	edx, esi	; 恢复 edx
 
-        mov     esi, esp                    ;esi = 进程表起始地址
+	mov     esi, esp                    ;esi = 进程表起始地址
 
-        inc     dword [k_reenter]           ;k_reenter++;
-        cmp     dword [k_reenter], 0        ;if(k_reenter ==0)
-        jne     .1                          ;{
-        mov     esp, StackTop               ;  mov esp, StackTop <--切换到内核栈
-        push    restart                     ;  push restart
-        jmp     [esi + RETADR - P_STACKBASE];  return;
+	inc     dword [k_reenter]           ;k_reenter++;
+	cmp     dword [k_reenter], 0        ;if(k_reenter ==0)
+	jne     .1                          ;{
+	mov     esp, StackTop               ;  mov esp, StackTop <--切换到内核栈
+	push    restart                     ;  push restart
+	jmp     [esi + RETADR - P_STACKBASE];  return;
 .1:                                         ;} else { 已经在内核栈，不需要再切换
-        push    restart_reenter             ;  push restart_reenter
-        jmp     [esi + RETADR - P_STACKBASE];  return;
-                                            ;}
+	push    restart_reenter             ;  push restart_reenter
+	jmp     [esi + RETADR - P_STACKBASE];  return;
+					    ;}
 
 
 ; =============================================================================
 ;                                 sys_call
 ; =============================================================================
 sys_call:
-        call    save
+	call    save
 
-        sti
+	sti
 	push	esi
 
 	push	dword [p_proc_ready]
 	push	edx
 	push	ecx
 	push	ebx
-        call    [sys_call_table + eax * 4]
+	call    [sys_call_table + eax * 4]
 	add	esp, 4 * 4
 
 	pop	esi
-        mov     [esi + EAXREG - P_STACKBASE], eax
-        cli
+	mov     [esi + EAXREG - P_STACKBASE], eax
+	cli
 
-        ret
+	ret
 
 
 ; ====================================================================================
@@ -391,7 +391,7 @@ restart:
 	mov	eax, PAGE_DIR_BASE
 .load_cr3:
 	mov	cr3, eax
-	lldt	[esp + P_LDT_SEL] 
+	lldt	[esp + P_LDT_SEL]
 	lea	eax, [esp + P_STACKTOP]
 	mov	dword [tss + TSS3_S_SP0], eax
 restart_reenter:

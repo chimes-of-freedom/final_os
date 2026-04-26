@@ -70,7 +70,7 @@ LABEL_START:			; <--- 从这里开始 *************
 .MemChkOK:
 
 	; 下面在 A 盘的根目录寻找 KERNEL.BIN
-	mov	word [wSectorNo], SectorNoOfRootDirectory	
+	mov	word [wSectorNo], SectorNoOfRootDirectory
 	xor	ah, ah	; ┓
 	xor	dl, dl	; ┣ 软驱复位
 	int	13h	; ┛
@@ -209,12 +209,12 @@ LABEL_FILE_LOADED:
 	xor     ax, ax
 	mov     es, ax
 	mov     ax, 0201h       ; AH = 02
-	                        ; AL = number of sectors to read (must be nonzero) 
+				; AL = number of sectors to read (must be nonzero)
 	mov     cx, 1           ; CH = low eight bits of cylinder number
-	                        ; CL = sector number 1-63 (bits 0-5)
-	                        ;      high two bits of cylinder (bits 6-7, hard disk only)
+				; CL = sector number 1-63 (bits 0-5)
+				;      high two bits of cylinder (bits 6-7, hard disk only)
 	mov     dx, 80h         ; DH = head number
-	                        ; DL = drive number (bit 7 set for hard disk)
+				; DL = drive number (bit 7 set for hard disk)
 	mov     bx, 500h        ; ES:BX -> data buffer
 	int     13h
 	;; 硬盘操作完毕
@@ -222,7 +222,7 @@ LABEL_FILE_LOADED:
 	mov	dh, 2			; "Ready."
 	call	DispStrRealMode		; 显示字符串
 
-	
+
 ; 下面准备跳入保护模式 -------------------------------------------
 
 ; 加载 GDTR
@@ -732,7 +732,7 @@ DispMemInfo:
 	ret
 ; ---------------------------------------------------------------------------
 
-	
+
 ;;; ; 显示内存信息 --------------------------------------------------------------
 ;;; DispHDInfo:
 ;;; 	push	eax
@@ -763,15 +763,15 @@ DispMemInfo:
 ;;; 	push	dword [dwNrSector] 	; NR Sector
 ;;; 	call	DispInt
 ;;; 	pop	eax
-	
+
 ;;; 	jmp	.hdinfo_finish
-	
+
 ;;; .nohd:
 ;;; 	push	szNOHD
 ;;; 	call	DispStr			; printf("No hard drive. System halt.");
 ;;; 	add	esp, 4
 ;;; 	jmp	$			; 没有硬盘，死在这里
-	
+
 ;;; .hdinfo_finish:
 ;;; 	call	DispReturn
 
@@ -779,7 +779,7 @@ DispMemInfo:
 ;;; 	ret
 ;;; ; ---------------------------------------------------------------------------
 
-	
+
 
 
 ; 启动分页机制 --------------------------------------------------------------
