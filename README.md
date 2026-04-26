@@ -10,7 +10,7 @@
 ## 环境要求
 
 - 项目构建环境：Ubuntu 14.04 i386
-- 构建环境依赖：`gcc make nasm mtools binutils zip unzip`
+- 构建环境依赖：`gcc make nasm mtools binutils zip unzip libc6-dev bc`
 - 项目开发、测试环境：Windows 10/11 (x64) and Bochs 3.0
 
 > Ubuntu 14.04 的 `apt` 命令不如 `apt-get` 完善，尽量避免使用。
@@ -40,7 +40,7 @@
 构建环境采用 Ubuntu 14.04 i386 以满足原 Orange OS 老旧的构建环境要求。
 
 1. 安装 Ubuntu 14.04 Server i386，并完成静态 IP、软件源换源、启用 ssh 等配置。
-2. 安装工具：`sudo apt-get update && sudo apt-get install gcc make nasm mtools binutils zip unzip`
+2. 安装工具：`sudo apt-get update && sudo apt-get install gcc make nasm mtools binutils zip unzip libc6-dev bc`
 3. 在家目录下创建 `projects/final_os` 目录作为构建的工作目录。
 
 ### 准备开发环境
