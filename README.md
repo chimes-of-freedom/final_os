@@ -17,7 +17,7 @@
 
 ## 如何构建
 
-在构建环境下在项目根目录执行 `remote_scripts/dev image`，该脚本会完成如下操作：
+在构建环境下在项目根目录执行 `bash remote_scripts/dev image`，该脚本会完成如下操作：
 
 1. 将 `80m.imag.tar.gz` 解压为 `80.img` 硬盘镜像；
 2. 在项目根目录下运行 `make image` 以构建系统并将 `boot.bin`、`loader.bin` 和 `kernel.bin` 写入 `a.img` 软盘镜像；
@@ -61,12 +61,11 @@
 
 5. 执行 `.\dev.ps1 init` 以完成初始化配置。根据提示输入构建环境登录用户信息即可。
 6. 按下 `Ctrl+Shift+P` 快捷键，输入 `SFTP`，选择 `SFTP: Upload Project` 以将项目必要的内容上传到构建环境指定目录。
-7. 如何构建：执行 `.\dev.ps1 connect` 以连接构建环境，然后通过 `remote_scripts/dev image` 构建。
+7. 如何构建：执行 `.\dev.ps1 connect` 以连接构建环境，然后通过 `bash remote_scripts/dev image` 构建。
 8. 如何切换连接构建环境方式：重新执行 `.\dev.ps1 init` 即可。
 
 > - `.\dev.ps1 init` 输入的用户信息以明文形式存储于 `dev\de_config.json` 下。
 > - 如果没看到 `SFTP: Upload Project`，重启 VS Code 即可。
-> - 如果执行 `remote_scripts/dev image` 提示无权限，则需要手动设置脚本执行权限：`chmod +x remote_scripts/dev`
 > - 如果希望直接使用脚本名 `dev image` 执行构建，请自行配置环境变量。
 
 ### 准备测试环境
